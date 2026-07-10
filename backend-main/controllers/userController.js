@@ -167,7 +167,7 @@ async function deleteUserProfile(req, res) {
       _id: new ObjectId(currentID),
     });
 
-    if (result.deleteCount == 0) {
+    if (result.deletedCount == 0) {
       return res.status(404).json({ message: "User not found!" });
     }
 
