@@ -1,10 +1,17 @@
 const Issue = require("../models/issueModel");
+const Repository = require("../models/repoModel");
 
 async function createIssue(req, res) {
   const { title, description } = req.body;
   const { id } = req.params;
 
   try {
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ error: "Title and description are required!" });
+    }
+
     const issue = new Issue({
       title,
       description,
@@ -12,6 +19,10 @@ async function createIssue(req, res) {
     });
 
     await issue.save();
+
+    await Repository.findByIdAndUpdate(id, {
+      $push: { issues: issue._id },
+    });
 
     res.status(201).json(issue);
   } catch (err) {
