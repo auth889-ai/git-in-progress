@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const Repository = require("../models/repoModel");
-const User = require("../models/userModel");
-const Issue = require("../models/issueModel");
 
 async function createRepository(req, res) {
   const { owner, name, issues, content, description, visibility } = req.body;
