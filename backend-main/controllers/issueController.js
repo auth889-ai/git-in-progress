@@ -1,6 +1,3 @@
-const mongoose = require("mongoose");
-const Repository = require("../models/repoModel");
-const User = require("../models/userModel");
 const Issue = require("../models/issueModel");
 
 async function createIssue(req, res) {
@@ -39,7 +36,7 @@ async function updateIssueById(req, res) {
 
     await issue.save();
 
-    res.json(issue, { message: "Issue updated" });
+    res.json(issue);
   } catch (err) {
     console.error("Error during issue updation : ", err.message);
     res.status(500).send("Server error");
