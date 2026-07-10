@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./dashboard.css";
 import Navbar from "../Navbar";
+import { API_URL } from "../../config";
 
 const Dashboard = () => {
   const [repositories, setRepositories] = useState([]);
@@ -13,9 +14,7 @@ const Dashboard = () => {
 
     const fetchRepositories = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3002/repo/user/${userId}`
-        );
+        const response = await fetch(`${API_URL}/repo/user/${userId}`);
         const data = await response.json();
         setRepositories(data.repositories || []);
       } catch (err) {
@@ -25,7 +24,7 @@ const Dashboard = () => {
 
     const fetchSuggestedRepositories = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/repo/all`);
+        const response = await fetch(`${API_URL}/repo/all`);
         const data = await response.json();
         setSuggestedRepositories(Array.isArray(data) ? data : []);
       } catch (err) {
