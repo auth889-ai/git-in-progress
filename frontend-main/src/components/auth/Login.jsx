@@ -25,6 +25,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    if (!email || !password) {
+      alert("Please enter your email and password.");
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await axios.post(`${API_URL}/login`, {
@@ -41,7 +46,7 @@ const Login = () => {
       window.location.href = "/";
     } catch (err) {
       console.error(err);
-      alert("Login Failed!");
+      alert(err.response?.data?.message || "Login Failed!");
       setLoading(false);
     }
   };
