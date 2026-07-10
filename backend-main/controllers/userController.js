@@ -19,11 +19,19 @@ async function connectClient() {
 async function signup(req, res) {
   const { username, password, email } = req.body;
   try {
+    if (!username || !password || !email) {
+      return res
+        .status(400)
+        .json({ message: "Username, email and password are required!" });
+    }
+
     await connectClient();
     const db = client.db("githubclone");
     const usersCollection = db.collection("users");
 
-    const user = await usersCollection.findOne({ username });
+    const user = await usersCollection.findOne({
+      $or: [{ username }, { email }],
+    });
     if (user) {
       return res.status(400).json({ message: "User already exists!" });
     }
