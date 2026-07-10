@@ -87,7 +87,6 @@ function startServer() {
 
   app.use("/", mainRouter);
 
-  let user = "test";
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
     cors: {
@@ -98,10 +97,7 @@ function startServer() {
 
   io.on("connection", (socket) => {
     socket.on("joinRoom", (userID) => {
-      user = userID;
-      console.log("=====");
-      console.log(user);
-      console.log("=====");
+      console.log(`User ${userID} joined room`);
       socket.join(userID);
     });
   });
