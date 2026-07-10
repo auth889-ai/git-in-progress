@@ -55,7 +55,7 @@ yargs(hideBin(process.argv))
     "Revert to a specific commit",
     (yargs) => {
       yargs.positional("commitID", {
-        describe: "Comit ID to revert to",
+        describe: "Commit ID to revert to",
         type: "string",
       });
     },
@@ -74,6 +74,11 @@ function startServer() {
   app.use(express.json());
 
   const mongoURI = process.env.MONGODB_URI;
+
+  if (!mongoURI) {
+    console.error("MONGODB_URI is not set. Add it to your .env file.");
+    process.exit(1);
+  }
 
   mongoose
     .connect(mongoURI)
