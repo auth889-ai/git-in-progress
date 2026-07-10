@@ -17,9 +17,9 @@ const Dashboard = () => {
           `http://localhost:3002/repo/user/${userId}`
         );
         const data = await response.json();
-        setRepositories(data.repositories);
+        setRepositories(data.repositories || []);
       } catch (err) {
-        console.error("Error while fecthing repositories: ", err);
+        console.error("Error while fetching repositories: ", err);
       }
     };
 
@@ -27,10 +27,9 @@ const Dashboard = () => {
       try {
         const response = await fetch(`http://localhost:3002/repo/all`);
         const data = await response.json();
-        setSuggestedRepositories(data);
-        console.log(suggestedRepositories);
+        setSuggestedRepositories(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Error while fecthing repositories: ", err);
+        console.error("Error while fetching suggested repositories: ", err);
       }
     };
 
