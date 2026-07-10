@@ -105,8 +105,12 @@ async function updateRepositoryById(req, res) {
       return res.status(404).json({ error: "Repository not found!" });
     }
 
-    repository.content.push(content);
-    repository.description = description;
+    if (content) {
+      repository.content.push(content);
+    }
+    if (description !== undefined) {
+      repository.description = description;
+    }
 
     const updatedRepository = await repository.save();
 
