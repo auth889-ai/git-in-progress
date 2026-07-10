@@ -72,14 +72,18 @@ const Dashboard = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {searchResults.map((repo) => {
-            return (
-              <div key={repo._id}>
-                <h4>{repo.name}</h4>
-                <h4>{repo.description}</h4>
-              </div>
-            );
-          })}
+          {searchResults.length === 0 ? (
+            <p>No repositories found.</p>
+          ) : (
+            searchResults.map((repo) => {
+              return (
+                <div key={repo._id}>
+                  <h4>{repo.name}</h4>
+                  <h4>{repo.description}</h4>
+                </div>
+              );
+            })
+          )}
         </main>
         <aside>
           <h3>Upcoming Events</h3>
