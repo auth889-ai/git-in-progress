@@ -21,6 +21,11 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
 
+    if (!username || !email || !password) {
+      alert("Please fill in username, email and password.");
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await axios.post(`${API_URL}/signup`, {
@@ -38,7 +43,7 @@ const Signup = () => {
       window.location.href = "/";
     } catch (err) {
       console.error(err);
-      alert("Signup Failed!");
+      alert(err.response?.data?.message || "Signup Failed!");
       setLoading(false);
     }
   };
