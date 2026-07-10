@@ -134,18 +134,18 @@ async function updateUserProfile(req, res) {
       updateFields.password = hashedPassword;
     }
 
-    const result = await usersCollection.findOneAndUpdate(
+    const updatedUser = await usersCollection.findOneAndUpdate(
       {
         _id: new ObjectId(currentID),
       },
       { $set: updateFields },
       { returnDocument: "after" }
     );
-    if (!result.value) {
+    if (!updatedUser) {
       return res.status(404).json({ message: "User not found!" });
     }
 
-    res.send(result.value);
+    res.send(updatedUser);
   } catch (err) {
     console.error("Error during updating : ", err.message);
     res.status(500).send("Server error!");
