@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Build output
+dist/
+
+# Local repo data created by the CLI
+.apnaGit/
+
+# macOS
+.DS_Store
