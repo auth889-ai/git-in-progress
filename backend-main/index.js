@@ -87,6 +87,10 @@ function startServer() {
 
   app.use("/", mainRouter);
 
+  app.use((req, res) => {
+    res.status(404).json({ message: "Route not found!" });
+  });
+
   const httpServer = http.createServer(app);
   const io = new Server(httpServer, {
     cors: {
