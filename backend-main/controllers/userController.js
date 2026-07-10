@@ -95,7 +95,9 @@ async function getAllUsers(req, res) {
     const db = client.db("githubclone");
     const usersCollection = db.collection("users");
 
-    const users = await usersCollection.find({}).toArray();
+    const users = await usersCollection
+      .find({}, { projection: { password: 0 } })
+      .toArray();
     res.json(users);
   } catch (err) {
     console.error("Error during fetching : ", err.message);
@@ -111,9 +113,10 @@ async function getUserProfile(req, res) {
     const db = client.db("githubclone");
     const usersCollection = db.collection("users");
 
-    const user = await usersCollection.findOne({
-      _id: new ObjectId(currentID),
-    });
+    const user = await usersCollection.findOne(
+      { _id: new ObjectId(currentID) },
+      { projection: { password: 0 } }
+    );
 
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
@@ -147,7 +150,7 @@ async function updateUserProfile(req, res) {
         _id: new ObjectId(currentID),
       },
       { $set: updateFields },
-      { returnDocument: "after" }
+      { returnDocument: "after", projection: { password: 0 } }
     );
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found!" });
