@@ -50,7 +50,7 @@ async function deleteIssueById(req, res) {
   const { id } = req.params;
 
   try {
-    const issue = Issue.findByIdAndDelete(id);
+    const issue = await Issue.findByIdAndDelete(id);
 
     if (!issue) {
       return res.status(404).json({ error: "Issue not found!" });
@@ -66,7 +66,7 @@ async function getAllIssues(req, res) {
   const { id } = req.params;
 
   try {
-    const issues = Issue.find({ repository: id });
+    const issues = await Issue.find({ repository: id });
 
     if (!issues) {
       return res.status(404).json({ error: "Issues not found!" });
