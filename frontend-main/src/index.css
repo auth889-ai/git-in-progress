@@ -234,3 +234,52 @@ p {
 .stat-card { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; }
 .stat-card .stat-num { font-size: 26px; font-weight: 800; color: var(--color-primary-deep); }
 .stat-card .stat-label { font-size: 13px; color: var(--color-text-muted); font-weight: 600; }
+
+/* ===== 2026 premium pass: bold type, ledger numerals, whitespace, micro-motion ===== */
+h1 { font-size: 28px; letter-spacing: -0.02em; }
+h2 { font-size: 21px; letter-spacing: -0.015em; }
+h3 { font-size: 16px; }
+.stat-card .stat-num, .star-count, .profile-stats b, .repo-card-meta {
+  font-variant-numeric: tabular-nums;
+}
+
+/* whitespace rhythm */
+.dashboard-layout { gap: 28px; padding-top: 32px; }
+.repo-section { margin-bottom: 32px; }
+.card { padding: 20px; }
+
+/* signature-hue focus ring everywhere */
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 6px; }
+
+/* animated link underline (micro-interaction) */
+.gh-navbar-links a, .file-breadcrumb a, .repo-card-title a {
+  background-image: linear-gradient(90deg, var(--color-primary), #a855f7);
+  background-size: 0% 2px;
+  background-repeat: no-repeat;
+  background-position: left 100%;
+  transition: background-size 0.25s ease;
+  padding-bottom: 2px;
+}
+.gh-navbar-links a:hover, .file-breadcrumb a:hover, .repo-card-title a:hover {
+  background-size: 100% 2px;
+  text-decoration: none;
+}
+
+/* smoother card lift */
+.card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+.card:hover { transform: translateY(-2px); }
+
+/* stat numbers pop in */
+@keyframes popIn { 0% { opacity: 0; transform: scale(.85); } 100% { opacity: 1; transform: scale(1); } }
+.stat-card .stat-num { animation: popIn .45s cubic-bezier(.2,.9,.3,1.4) both; }
+.stat-cards .stat-card:nth-child(2) .stat-num { animation-delay: .08s; }
+.stat-cards .stat-card:nth-child(3) .stat-num { animation-delay: .16s; }
+
+/* tab slide indicator feel */
+.repo-tab { transition: color .15s ease, border-color .2s ease, transform .15s ease; }
+.repo-tab:hover { transform: translateY(-1px); }
+
+/* reduced-motion respect (accessibility = premium) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
