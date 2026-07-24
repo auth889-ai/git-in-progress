@@ -155,6 +155,11 @@ const CommitHistory = ({ commits, isOwner, onChanged }) => {
                       🧠 memory
                     </span>
                   )}
+                  {commit.carbon?.grams > 0 && (
+                    <span className="risk-verdict risk-go" title={`Greenest region would cut ${commit.carbon.savingPct}%`}>
+                      🌱 {commit.carbon.grams} gCO₂
+                    </span>
+                  )}
                 </div>
                 <div className="issue-row-desc">
                   {commit.changes?.map((c) => `${c.action}: ${c.path}`).join(" · ")}

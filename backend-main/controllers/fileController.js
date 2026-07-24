@@ -6,6 +6,7 @@ const Issue = require("../models/issueModel");
 const { reviewDiff, onboardingBriefing } = require("../services/aiReviewer");
 const { computeFullRisk, repoMemoryNotes, scanSecrets } = require("../services/riskEngine");
 const { buildGraph, rippleImpact } = require("../services/depGraph");
+const { commitCarbon, repoCarbon } = require("../services/carbon");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
 const MAX_PATCH_CHARS = 100 * 1024;
@@ -129,6 +130,7 @@ async function uploadFiles(req, res) {
       message: message?.trim() || `Add ${changes.length} file(s)`,
       changes,
       policyRisk: await computeFullRisk(id, changes, message),
+      carbon: commitCarbon({ changes }),
     });
 
     // Launch-Control-style automatic remediation: a BLOCK doesn't just say
@@ -491,6 +493,7 @@ async function getRepoHealth(req, res) {
     }
 
     const secrets = scanSecrets(files);
+    const carbon = repoCarbon(commits);
     const languages = {};
     for (const f of files) {
       const ext = (f.path.split(".").pop() || "").toLowerCase() || "other";
@@ -527,6 +530,7 @@ async function getRepoHealth(req, res) {
       health,
       grade,
       secrets,
+      carbon,
     });
   } catch (err) {
     console.error("Error computing repo health : ", err.message);

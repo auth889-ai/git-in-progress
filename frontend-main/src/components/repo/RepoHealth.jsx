@@ -114,6 +114,34 @@ const RepoHealth = ({ repoId }) => {
         </div>
 
         <div className="card">
+          <h3>🌱 Carbon footprint</h3>
+          {!health.carbon ? (
+            <p className="text-muted">No data yet.</p>
+          ) : (
+            <>
+              <p style={{ fontSize: 22, fontWeight: 800, margin: "4px 0" }}>
+                {health.carbon.totalGrams} gCO₂eq
+              </p>
+              <p className="text-muted" style={{ fontSize: 13 }}>
+                estimated for all commits, running in {health.carbon.region}.
+              </p>
+              <p style={{ fontSize: 13, marginTop: 8, color: "#1a7f37" }}>
+                Route to <b>{health.carbon.greenestRegion}</b> → {health.carbon.greenestGrams} gCO₂eq
+                (−{health.carbon.savingPct}%).
+              </p>
+              <div className="repo-about-langs" style={{ marginTop: 10 }}>
+                {health.carbon.regions.slice(0, 5).map((r) => (
+                  <span key={r.name} className="lang-chip" title={`${r.intensity} gCO₂/kWh`}>
+                    <span className="lang-dot" style={{ background: r.intensity < 150 ? "#1a7f37" : r.intensity < 400 ? "#9a6700" : "#cf222e" }} />
+                    {r.name.split(" ")[0]}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="card">
           <h3>🔐 Security inventory</h3>
           {(!health.secrets || health.secrets.length === 0) ? (
             <p className="text-muted">No hardcoded secrets detected in stored text files. 🎉</p>

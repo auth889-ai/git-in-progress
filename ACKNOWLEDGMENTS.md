@@ -44,4 +44,14 @@ reproduced below. Local reference clones live in `../winner-reference/`.
   everything indirectly affected ("from blind diffs to structural
   understanding"). See `backend-main/services/depGraph.js` and the repo Graph tab.
 
+## GreenPipe (Green Agent Prize)
+
+- Devpost: https://devpost.com/software/greenpipe
+- Idea + methodology adopted here: **carbon footprint accounting** — a curated
+  grid carbon-intensity dataset (ENTSO-E / EIA eGRID / IEA figures), Cloud
+  Carbon Footprint energy estimation, and the ISO/IEC 21031 SCI formula
+  (SCI = E × I). Each commit gets a gCO2eq estimate and a "route to the greenest
+  region" recommendation. See `backend-main/services/carbon.js` and the repo
+  Health tab.
+
 Thanks to all these teams for publishing their work.

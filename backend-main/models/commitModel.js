@@ -53,6 +53,14 @@ const CommitSchema = new Schema(
     },
     // Set when this commit was created by reverting another commit
     revertOf: { type: Schema.Types.ObjectId, ref: "Commit" },
+    // GreenPipe-style carbon estimate for this commit (gCO2eq)
+    carbon: {
+      grams: Number,
+      region: String,
+      greenestRegion: String,
+      greenestGrams: Number,
+      savingPct: Number,
+    },
     // Cached AI review of this commit's diff
     aiReview: {
       summary: String,
