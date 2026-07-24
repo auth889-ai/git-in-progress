@@ -8,160 +8,133 @@ import GateFeed from "./GateFeed";
 import { API_URL } from "../../config";
 import "./dashboard.css";
 
+const StatCard = ({ icon, tint, value, label }) => (
+  <div className="dash-stat">
+    <span className="dash-stat-icon" style={{ background: tint }}>{icon}</span>
+    <div>
+      <div className="dash-stat-num">{value}</div>
+      <div className="dash-stat-label">{label}</div>
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
   const [repositories, setRepositories] = useState([]);
   const [allRepositories, setAllRepositories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
-
     const fetchAll = async () => {
       try {
         const [mineRes, allRes] = await Promise.allSettled([
           axios.get(`${API_URL}/repo/user/${userId}`),
           axios.get(`${API_URL}/repo/all`),
         ]);
-
-        if (mineRes.status === "fulfilled") {
+        if (mineRes.status === "fulfilled")
           setRepositories(mineRes.value.data.repositories || []);
-        }
-        if (allRes.status === "fulfilled" && Array.isArray(allRes.value.data)) {
+        if (allRes.status === "fulfilled" && Array.isArray(allRes.value.data))
           setAllRepositories(allRes.value.data);
-        }
       } catch (err) {
         console.error("Error while fetching repositories: ", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchAll();
   }, []);
 
-  const filteredOwnRepos = repositories.filter((repo) =>
-    repo.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const totalIssues = allRepositories.reduce((a, r) => a + (r.issues?.length || 0), 0);
+  const myStars = repositories.reduce(
+    (a, r) => a + (r.stars?.length || r.starCount || 0),
+    0
   );
+  const recentRepos = [...allRepositories]
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    .slice(0, 5);
+  const recentActivity = [...allRepositories]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 6);
 
   return (
     <>
       <Navbar />
-      <section className="dashboard-layout">
-        <aside className="dashboard-sidebar card">
-          <div className="dashboard-sidebar-header">
-            <h3>Your repositories</h3>
-            <Link to="/create" className="btn btn-primary">
-              New
-            </Link>
+      <div className="dash">
+        <div className="dash-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p className="text-muted">Overview of your activity and repositories</p>
           </div>
-          <input
-            type="text"
-            className="form-input"
-            value={searchQuery}
-            placeholder="Find a repository…"
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <div className="dashboard-repo-list">
+          <Link to="/create" className="btn btn-primary">+ New repository</Link>
+        </div>
+
+        <div className="dash-stats">
+          <StatCard icon="📁" tint="#ddf4e4" value={repositories.length} label="Repositories" />
+          <StatCard icon="⭐" tint="#fff8c5" value={myStars} label="Stars" />
+          <StatCard icon="🌐" tint="#ddf0ff" value={allRepositories.length} label="Public repos" />
+          <StatCard icon="🐛" tint="#ffebe9" value={totalIssues} label="Issues" />
+        </div>
+
+        <div className="dash-cols">
+          <section className="card dash-panel">
+            <div className="dash-panel-head">
+              <h3>Recent Repositories</h3>
+              <Link to="/explore" className="dash-viewall">View all →</Link>
+            </div>
             {loading ? (
               <p className="text-muted">Loading…</p>
-            ) : filteredOwnRepos.length === 0 ? (
-              <p className="text-muted">
-                {searchQuery
-                  ? "No repositories match your search."
-                  : "You don't have any repositories yet."}
-              </p>
+            ) : recentRepos.length === 0 ? (
+              <p className="text-muted">No repositories yet. <Link to="/create">Create one</Link>.</p>
             ) : (
-              filteredOwnRepos.map((repo) => (
-                <Link
-                  key={repo._id}
-                  to={`/repository/${repo._id}`}
-                  className="dashboard-repo-item"
-                >
+              recentRepos.map((repo) => (
+                <Link key={repo._id} to={`/repository/${repo._id}`} className="dash-repo-row">
                   <RepoIcon />
-                  {repo.name}
+                  <div className="dash-repo-name">
+                    {repo.owner?.username ? `${repo.owner.username} / ` : ""}{repo.name}
+                    {repo.description && <span className="dash-repo-desc">{repo.description}</span>}
+                  </div>
+                  <span className={`dash-vis ${repo.visibility === false ? "priv" : "pub"}`}>
+                    {repo.visibility === false ? "Private" : "Public"}
+                  </span>
                 </Link>
               ))
             )}
-          </div>
-        </aside>
+          </section>
 
-        <main className="dashboard-main">
-          <div className="stat-cards">
-            <div className="card stat-card"><span className="stat-num">{repositories.length}</span><span className="stat-label">📁 Your repositories</span></div>
-            <div className="card stat-card"><span className="stat-num">{allRepositories.length}</span><span className="stat-label">🌐 Public repositories</span></div>
-            <div className="card stat-card"><span className="stat-num">{allRepositories.reduce((a, r) => a + (r.issues?.length || 0), 0)}</span><span className="stat-label">🐛 Total issues</span></div>
-          </div>
-          <h2>Risk gate activity</h2>
-          <GateFeed />
-
-          <h2>Explore repositories</h2>
-          {loading ? (
-            <p className="spinner-note">Loading repositories…</p>
-          ) : allRepositories.length === 0 ? (
-            <div className="card">
-              <p className="text-muted">
-                No repositories exist yet.{" "}
-                <Link to="/create">Create the first one</Link> to get started.
-              </p>
+          <section className="card dash-panel">
+            <div className="dash-panel-head">
+              <h3>Recent Activity</h3>
             </div>
-          ) : (
-            <div className="repo-feed">
-              {allRepositories.map((repo) => (
-                <div key={repo._id} className="card">
-                  <div className="repo-card-title">
-                    <RepoIcon />
-                    {repo.owner?._id && (
-                      <Link to={`/user/${repo.owner._id}`}>{repo.owner.username}</Link>
-                    )}
-                    {repo.owner?.username ? " / " : ""}
-                    <Link to={`/repository/${repo._id}`}>{repo.name}</Link>
-                    <span className="badge">
-                      {repo.visibility === false ? "Private" : "Public"}
-                    </span>
-                    {repo.visibility === false && <LockIcon size={14} />}
-                  </div>
-                  {repo.description && (
-                    <p className="repo-card-desc">{repo.description}</p>
-                  )}
-                  <div className="repo-card-meta">
-                    <span>
-                      {repo.issues?.length || 0} issue
-                      {(repo.issues?.length || 0) === 1 ? "" : "s"}
-                    </span>
-                    <span>Updated {timeAgo(repo.updatedAt)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </main>
-
-        <aside className="dashboard-aside-right">
-          <Toolbox />
-          <div className="card dashboard-events">
-            <h3>Latest activity</h3>
-            {allRepositories.length === 0 ? (
+            {recentActivity.length === 0 ? (
               <p className="text-muted">Nothing here yet.</p>
             ) : (
-              <ul>
-                {[...allRepositories]
-                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                  .slice(0, 5)
-                  .map((repo) => (
-                    <li key={repo._id}>
-                      <Link to={`/repository/${repo._id}`}>{repo.name}</Link>
-                      <span>
-                        created by {repo.owner?.username || "unknown"}{" "}
-                        {timeAgo(repo.createdAt)}
-                      </span>
-                    </li>
-                  ))}
-              </ul>
+              recentActivity.map((repo) => (
+                <div key={repo._id} className="dash-activity-row">
+                  <span className="dash-activity-dot" />
+                  <div>
+                    <Link to={`/repository/${repo._id}`} className="dash-activity-repo">{repo.name}</Link>
+                    <div className="dash-activity-meta">
+                      created by{" "}
+                      {repo.owner?._id ? (
+                        <Link to={`/user/${repo.owner._id}`}>{repo.owner.username}</Link>
+                      ) : "unknown"}{" "}
+                      · {timeAgo(repo.createdAt)}
+                    </div>
+                  </div>
+                </div>
+              ))
             )}
-          </div>
-        </aside>
-      </section>
+          </section>
+        </div>
+
+        <div className="dash-cols">
+          <section>
+            <h3 className="dash-section-title">Risk gate activity</h3>
+            <GateFeed />
+          </section>
+          <Toolbox />
+        </div>
+      </div>
     </>
   );
 };
