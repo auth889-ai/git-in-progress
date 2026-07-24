@@ -660,6 +660,21 @@ const RepoDetail = () => {
                 </div>
               ) : (
                 <div className="file-list">
+                  <div className="file-table-header">
+                    <CommitIcon />
+                    <span className="file-table-msg">
+                      {commits[0]?.message || "No commits yet"}
+                    </span>
+                    <span className="text-muted" style={{ whiteSpace: "nowrap" }}>
+                      {commits[0] ? timeAgo(commits[0].createdAt) : ""}
+                    </span>
+                    <button
+                      className="file-table-commits-link"
+                      onClick={() => setActiveTab("commits")}
+                    >
+                      🕘 {commits.length} commit{commits.length === 1 ? "" : "s"}
+                    </button>
+                  </div>
                   {files.map((file) => (
                     <div key={file._id} className="file-row">
                       <FileIcon />

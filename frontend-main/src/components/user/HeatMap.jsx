@@ -44,6 +44,11 @@ const HeatMapProfile = ({ timestamps = [] }) => {
         rectSize={12}
         space={3}
         rectProps={{ rx: 2 }}
+        rectRender={(props, data) => (
+          <rect {...props}>
+            <title>{`${data.date}: ${data.count || 0} contribution${(data.count || 0) === 1 ? "" : "s"}`}</title>
+          </rect>
+        )}
         panelColors={PANEL_COLORS}
       />
     </div>

@@ -82,19 +82,19 @@ const Profile = () => {
             )}
           </div>
           <div className="profile-stats">
-            <span>
+            <button className="stat-link" onClick={() => document.getElementById("repos-section")?.scrollIntoView({ behavior: "smooth" })}>
               <b>{repositories.length}</b> repositor
               {repositories.length === 1 ? "y" : "ies"}
-            </span>
+            </button>
             <span>
               <b>{userDetails?.followedUsers?.length || 0}</b> following
             </span>
-            <span>
+            <button className="stat-link" onClick={() => document.getElementById("starred-section")?.scrollIntoView({ behavior: "smooth" })}>
               <b>{starred.length}</b> starred
-            </span>
-            <span>
+            </button>
+            <button className="stat-link" onClick={() => document.getElementById("commits-section")?.scrollIntoView({ behavior: "smooth" })}>
               <b>{commits.length}</b> commit{commits.length === 1 ? "" : "s"}
-            </span>
+            </button>
           </div>
           {userDetails?.createdAt && (
             <p className="profile-joined">
@@ -111,7 +111,43 @@ const Profile = () => {
             </div>
           </section>
 
-          <section>
+          <section id="commits-section">
+            <h3 className="profile-section-title">Recent commits</h3>
+            {commits.length === 0 ? (
+              <div className="card">
+                <p className="text-muted">No commits yet — upload files to a repository.</p>
+              </div>
+            ) : (
+              <div className="card" style={{ padding: 0 }}>
+                {commits.slice(0, 15).map((commit) => {
+                  const repo = repositories.find((r) => r._id === commit.repository);
+                  return (
+                    <div key={commit._id} className="profile-commit-row">
+                      <div>
+                        <b>{commit.message}</b>
+                        <div className="text-muted" style={{ fontSize: 12 }}>
+                          {timeAgo(commit.createdAt)}
+                          {repo && (
+                            <>
+                              {" · in "}
+                              <Link to={`/repository/${repo._id}`}>{repo.name}</Link>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {!repo && (
+                        <Link className="btn" to={`/repository/${commit.repository}`} style={{ marginLeft: "auto" }}>
+                          View repo
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <section id="repos-section">
             <h3 className="profile-section-title">Repositories</h3>
             {repositories.length === 0 ? (
               <div className="card">
@@ -149,7 +185,7 @@ const Profile = () => {
           </section>
 
           {starred.length > 0 && (
-            <section>
+            <section id="starred-section">
               <h3 className="profile-section-title">Starred repositories</h3>
               <div className="profile-repo-grid">
                 {starred.map((repo) => (
