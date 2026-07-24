@@ -131,18 +131,28 @@ async function getUserProfile(req, res) {
 
 async function updateUserProfile(req, res) {
   const currentID = req.params.id;
-  const { email, password } = req.body;
+  const { email, password, avatar } = req.body;
 
   try {
     await connectClient();
     const db = client.db("githubclone");
     const usersCollection = db.collection("users");
 
-    let updateFields = { email };
+    let updateFields = {};
+    if (email) updateFields.email = email;
+    if (typeof avatar === "string") {
+      if (avatar.length > 3 * 1024 * 1024) {
+        return res.status(400).json({ message: "Avatar too large — max ~2 MB image." });
+      }
+      updateFields.avatar = avatar; // data-URL string ("" clears it)
+    }
     if (password) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       updateFields.password = hashedPassword;
+    }
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: "Nothing to update." });
     }
 
     const updatedUser = await usersCollection.findOneAndUpdate(

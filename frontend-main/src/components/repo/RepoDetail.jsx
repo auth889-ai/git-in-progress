@@ -107,6 +107,7 @@ const RepoDetail = () => {
   const [reviewLoading, setReviewLoading] = useState(null);
   const [reviewErrors, setReviewErrors] = useState({});
   const [openFile, setOpenFile] = useState(null);
+  const [dirPath, setDirPath] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -448,6 +449,19 @@ const RepoDetail = () => {
     );
   }
 
+  // GitHub-style directory listing for the current folder
+  const dirPrefix = dirPath ? dirPath + "/" : "";
+  const folderSet = new Set();
+  const dirFiles = [];
+  for (const f of files) {
+    if (!f.path.startsWith(dirPrefix)) continue;
+    const rest = f.path.slice(dirPrefix.length);
+    const slash = rest.indexOf("/");
+    if (slash === -1) dirFiles.push(f);
+    else folderSet.add(rest.slice(0, slash));
+  }
+  const dirFolders = [...folderSet].sort();
+
   const openIssues = issues.filter((i) => i.status === "open");
   const closedIssues = issues.filter((i) => i.status !== "open");
 
@@ -540,6 +554,7 @@ const RepoDetail = () => {
               onChange={(e) => {
                 setCurrentBranch(e.target.value);
                 setOpenFile(null);
+                setDirPath("");
                 setBranchNotice("");
               }}
             >
@@ -675,14 +690,41 @@ const RepoDetail = () => {
                       🕘 {commits.length} commit{commits.length === 1 ? "" : "s"}
                     </button>
                   </div>
-                  {files.map((file) => (
+                  {dirPath && (
+                    <div className="file-row">
+                      <span style={{ width: 16 }} />
+                      <button
+                        className="file-link"
+                        onClick={() =>
+                          setDirPath(dirPath.split("/").slice(0, -1).join("/"))
+                        }
+                      >
+                        ..
+                      </button>
+                      <span className="file-meta">{dirPath}/</span>
+                    </div>
+                  )}
+                  {dirFolders.map((folder) => (
+                    <div key={folder} className="file-row">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="#54aeff" aria-hidden="true">
+                        <path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1Z" />
+                      </svg>
+                      <button
+                        className="file-link"
+                        onClick={() => setDirPath(dirPrefix + folder)}
+                      >
+                        {folder}
+                      </button>
+                    </div>
+                  ))}
+                  {dirFiles.map((file) => (
                     <div key={file._id} className="file-row">
                       <FileIcon />
                       <button
                         className="file-link"
                         onClick={() => handleOpenFile(file._id)}
                       >
-                        {file.path}
+                        {file.path.slice(dirPrefix.length)}
                       </button>
                       <span className="file-meta">
                         {(file.size / 1024).toFixed(1)} KB ·{" "}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
@@ -13,6 +13,35 @@ const Profile = () => {
   const [commits, setCommits] = useState([]);
   const [starred, setStarred] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [avatarError, setAvatarError] = useState("");
+  const avatarInputRef = useRef(null);
+
+  const handleAvatarPick = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      setAvatarError("Please choose an image file.");
+      return;
+    }
+    if (f.size > 2 * 1024 * 1024) {
+      setAvatarError("Image too large — max 2 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        setAvatarError("");
+        const userId = localStorage.getItem("userId");
+        const res = await axios.put(`${API_URL}/updateProfile/${userId}`, {
+          avatar: String(reader.result),
+        });
+        setUserDetails((prev) => ({ ...prev, avatar: res.data?.avatar || String(reader.result) }));
+      } catch (err) {
+        setAvatarError(err.response?.data?.message || "Upload failed.");
+      }
+    };
+    reader.readAsDataURL(f);
+  };
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -70,9 +99,24 @@ const Profile = () => {
       <Navbar />
       <div className="profile-layout">
         <aside className="profile-sidebar">
-          <div className="avatar profile-avatar">
-            {(userDetails?.username || "?").charAt(0).toUpperCase()}
-          </div>
+          {userDetails?.avatar ? (
+            <img className="profile-avatar-img" src={userDetails.avatar} alt="avatar" />
+          ) : (
+            <div className="avatar profile-avatar">
+              {(userDetails?.username || "?").charAt(0).toUpperCase()}
+            </div>
+          )}
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleAvatarPick}
+          />
+          <button className="btn" onClick={() => avatarInputRef.current?.click()}>
+            {userDetails?.avatar ? "Change photo" : "Upload photo"}
+          </button>
+          {avatarError && <p className="flash-error" style={{ margin: 0 }}>{avatarError}</p>}
           <div>
             <h2 className="profile-username">
               {userDetails?.username || "Unknown user"}

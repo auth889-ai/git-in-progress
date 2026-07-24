@@ -96,3 +96,16 @@
     font-size: 48px;
   }
 }
+
+.profile-avatar-img {
+  width: 260px;
+  height: 260px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.25);
+}
+@media screen and (max-width: 768px) {
+  .profile-avatar-img { width: 120px; height: 120px; }
+}
