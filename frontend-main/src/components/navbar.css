@@ -79,8 +79,8 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: rgba(38, 37, 35, 0.92);
-  border: 1px solid #3a3833;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #d0d7de;
   border-radius: 22px;
   box-shadow: 0 8px 24px rgba(31, 35, 40, 0.15);
   animation: riseIn 0.5s ease both;
@@ -100,10 +100,10 @@
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
-.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #dfbe8e; }
+.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #0969da; }
 .dock-item.active {
-  background: #ece9e4;
-  color: #201f1d;
+  background: #24292f;
+  color: #ffffff;
   box-shadow: 0 2px 8px rgba(31, 35, 40, 0.3);
 }
 .dock-item.active .dock-icon { filter: none; }
@@ -112,16 +112,16 @@ body { padding-bottom: 90px; }
 
 /* header: translucent lavender-tinted chrome floating on the canvas */
 .gh-navbar {
-  background-color: rgba(32, 31, 29, 0.9);
-  border-bottom: 1px solid #33322e;
-  box-shadow: 0 1px 10px rgba(0,0,0,0.3);
+  background-color: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid #d0d7de;
+  box-shadow: 0 1px 8px rgba(31, 35, 40, 0.04);
 }
-.gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #ece9e4; }
-.gh-navbar .gh-navbar-links a:hover { color: #dfbe8e; }
+.gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #111827; }
+.gh-navbar .gh-navbar-links a:hover { color: #0969da; }
 .gh-navbar .btn {
-  background: var(--color-canvas-inset); color: #ece9e4; border: 1px solid var(--color-border);
+  background: #ffffff; color: #111827; border: 1px solid var(--color-border);
   border-radius: 999px; padding: 7px 18px;
 }
-.gh-navbar .btn:hover { border-color: #4a4842; background: #2e2d2a; }
-.gh-navbar .btn-primary { background: var(--gradient-primary); color: #201f1d; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
-.gh-navbar .btn-primary:hover { background: #f7f3ea; }
+.gh-navbar .btn:hover { border-color: #b6c2cc; background: #f3f4f6; }
+.gh-navbar .btn-primary { background: var(--gradient-primary); color: #ffffff; border: 1px solid rgba(27,31,36,0.15); box-shadow: 0 1px 2px rgba(31, 136, 61, 0.3); }
+.gh-navbar .btn-primary:hover { background: #1a7f37; }

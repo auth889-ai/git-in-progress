@@ -3,7 +3,7 @@ import HeatMap from "@uiw/react-heat-map";
 
 // Violet contribution scale to match the premium light theme
 const PANEL_COLORS = {
-  0: "#2e2d2a",
+  0: "#e6eee7",
   1: "#c3e2cf",
   3: "#79b98f",
   6: "#3f8f68",

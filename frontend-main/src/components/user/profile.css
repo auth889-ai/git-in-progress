@@ -14,8 +14,8 @@
   align-items: center;
   text-align: center;
   gap: 16px;
-  background: var(--color-canvas-inset);
-  border: 1px solid #3a3833;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
   border-radius: 20px;
   padding: 24px 20px;
   box-shadow: var(--shadow-card);
@@ -52,7 +52,7 @@
 .profile-stats .stat-link {
   padding: 5px 12px;
   border-radius: 99px;
-  background: #2e2d2a;
+  background: #eff2f5;
 }
 
 .profile-stats b {
@@ -125,7 +125,7 @@
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid transparent;
-  background: linear-gradient(#262523, #262523) padding-box, linear-gradient(135deg, #dfbe8e, #8ab4dd) border-box;
+  background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #2ea043, #0969da) border-box;
   box-shadow: 0 4px 16px rgba(31, 35, 40, 0.15);
 }
 @media screen and (max-width: 768px) {
@@ -147,15 +147,15 @@
   gap: 4px;
   padding: 16px 10px;
   border-radius: 16px;
-  background: var(--color-canvas-inset);
-  border: 1px solid #3a3833;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
   box-shadow: var(--shadow-card);
   font-size: 13px;
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .achievement:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
 .achievement-icon { font-size: 30px; }
-.achievement.earned { background: var(--color-canvas-inset); border-bottom: 3px solid #2ea043; }
+.achievement.earned { background: #ffffff; border-bottom: 3px solid #2ea043; }
 .achievement.locked { opacity: .55; filter: grayscale(.7); }
 .achievement-hint { font-size: 11px; color: var(--color-text-muted); }
 .achievement.earned .achievement-hint { color: #1a7f37; font-weight: 700; }
@@ -169,9 +169,9 @@
   font-variant-numeric: tabular-nums;
   box-shadow: var(--shadow-card);
 }
-.gate-go { background: rgba(74,222,128,.12); color: #86e3a1; }
-.gate-review { background: rgba(251,191,36,.12); color: #f2cd6f; }
-.gate-block { background: rgba(248,113,113,.12); color: #f2a09d; }
+.gate-go { background: #ddf4e4; color: #1a7f37; }
+.gate-review { background: #fff8c5; color: #9a6700; }
+.gate-block { background: #ffebe9; color: #cf222e; }
 
 /* ---- getting started checklist ---- */
 .getting-started { display: flex; flex-direction: column; gap: 4px; padding: 10px 14px; }
@@ -185,9 +185,9 @@
   font-weight: 600;
   font-size: 14px;
 }
-.gs-step:hover { background: #2e2d2a; text-decoration: none; }
+.gs-step:hover { background: #eff2f5; text-decoration: none; }
 .gs-step.done { color: var(--color-text-muted); font-weight: 500; }
-.gs-go { margin-left: auto; color: #dfbe8e; }
+.gs-go { margin-left: auto; color: #0969da; }
 
 /* GitHub-style full-width follow button on profile */
 .profile-sidebar .follow-btn { width: 100%; justify-content: center; padding: 6px 12px; font-size: 14px; }

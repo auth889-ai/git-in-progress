@@ -164,7 +164,7 @@
 }
 
 .danger-zone {
-  background-color: var(--color-canvas-inset);
+  background-color: #ffffff;
   border: 1px solid #fecaca;
   border-radius: var(--radius);
   padding: 16px;
@@ -203,7 +203,7 @@
   gap: 2px;
   margin-top: 16px;
   flex-wrap: wrap;
-  background: #2e2d2a;
+  background: #eff2f5;
   border-radius: 12px;
   padding: 4px;
 }
@@ -228,7 +228,7 @@
 }
 .repo-tab.active {
   color: var(--color-text);
-  background: var(--color-canvas-inset);
+  background: #ffffff;
   box-shadow: 0 1px 3px rgba(31, 35, 40, 0.12);
   font-weight: 600;
 }
@@ -250,7 +250,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--color-canvas-inset);
+  background: #ffffff;
 }
 
 .file-row {
@@ -434,7 +434,7 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  background: var(--color-canvas-inset);
+  background: #ffffff;
 }
 
 .commit-diff-header {
@@ -665,9 +665,9 @@
   cursor: help;
   animation: riseIn 0.4s ease both;
 }
-.risk-go { background: rgba(74,222,128,.12); color: #86e3a1; border: 1px solid rgba(74,222,128,.35); }
-.risk-review { background: rgba(251,191,36,.12); color: #f2cd6f; border: 1px solid rgba(251,191,36,.35); }
-.risk-block { background: rgba(248,113,113,.12); color: #f2a09d; border: 1px solid rgba(248,113,113,.4); }
+.risk-go { background: rgba(16,185,129,.12); color: #047857; border: 1px solid rgba(16,185,129,.4); }
+.risk-review { background: rgba(245,158,11,.14); color: #b45309; border: 1px solid rgba(245,158,11,.4); }
+.risk-block { background: rgba(239,68,68,.12); color: #b91c1c; border: 1px solid rgba(239,68,68,.45); }
 
 /* ---- risk gate evidence panel (Launch-Control style breakdown) ---- */
 .risk-evidence {
@@ -695,7 +695,7 @@
 .health-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .health-bar-row { display: grid; grid-template-columns: minmax(70px, auto) 1fr 34px; align-items: center; gap: 10px; margin: 7px 0; font-size: 13px; }
 .health-bar-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
-.health-bar-track { height: 8px; background: #1b1a18; border-radius: 99px; overflow: hidden; }
+.health-bar-track { height: 8px; background: var(--color-canvas-subtle); border-radius: 99px; overflow: hidden; }
 .health-bar-fill { height: 100%; border-radius: 99px; transition: width .4s ease; }
 .health-bar-value { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
 .health-spark { display: flex; align-items: flex-end; gap: 6px; height: 90px; padding-top: 8px; }
@@ -703,14 +703,14 @@
 
 /* follow button (GitHub-style) */
 .follow-btn { padding: 3px 12px; font-size: 12px; }
-.follow-btn.following { background: #2e2d2a; color: #ece9e4; }
+.follow-btn.following { background: #eff2f5; color: #1f2328; }
 
 
 /* ---- repo body: content + About side panel (design-tool panel structure) ---- */
 .repo-body { display: grid; grid-template-columns: minmax(0, 1fr) 296px; gap: 24px; align-items: start; margin-top: 20px; }
 .repo-body-main { min-width: 0; }
 .repo-about {
-  background: var(--color-canvas-inset);
+  background: #ffffff;
   border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 18px;
