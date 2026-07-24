@@ -3,23 +3,23 @@
   /* ElleZephyr UX/UI collection structure — sage-green plant family:
      soft mist-green canvas, white cards floating on it, sage accents,
      deep forest for dark "moment" panels, colored (green) shadows */
-  --color-canvas: #f5f5f2;
+  --color-canvas: #f6f7f9;
   --color-canvas-subtle: #eff2f5;
   --color-canvas-inset: #ffffff;
   --color-border: #d0d7de;
   --color-border-muted: #e7ecf0;
   --color-text: #1f2328;
   --color-text-muted: #656d76;
-  --color-accent: #2f9e77;
-  --color-primary: #17171c;
-  --color-primary-deep: #17171c;
+  --color-accent: #1f883d;
+  --color-primary: #1f883d;
+  --color-primary-deep: #1a7f37;
   --color-teal: #0d9488;
   --color-amber: #d9932c;
   --color-rose: #d6567f;
   --color-success: #10b981;
   --color-danger: #dc2626;
   --color-danger-btn: #ef4444;
-  --gradient-primary: linear-gradient(180deg, #24242b, #17171c);
+  --gradient-primary: linear-gradient(180deg, #2ea043, #1f883d);
   --shadow-card: 0 1px 3px rgba(31, 35, 40, 0.08), 0 8px 24px rgba(31, 35, 40, 0.06);
   --shadow-card-hover: 0 3px 6px rgba(31, 35, 40, 0.08), 0 12px 28px rgba(31, 35, 40, 0.12);
   --radius: 12px;
@@ -108,10 +108,10 @@ p {
   color: #ffffff;
   background: var(--gradient-primary);
   border: none;
-  box-shadow: 0 1px 3px rgba(23, 23, 28, 0.3);
+  box-shadow: 0 1px 2px rgba(31,136,61,0.25);
 }
 .btn-primary:hover {
-  background: #2c2c34;
+  background: #1a7f37;
   box-shadow: 0 2px 8px rgba(23, 23, 28, 0.35);
 }
 
@@ -229,16 +229,15 @@ p {
 }
 .btn:active { transform: translateY(0) scale(0.98); }
 
-/* stat band (Image-4 reference): ONE near-black card, stats separated by dividers */
-.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; margin-bottom: 20px; background: #17171c; border-radius: 18px; padding: 10px 0; box-shadow: 0 10px 28px rgba(23, 23, 28, 0.25); }
-.stat-card { display: flex; flex-direction: column; gap: 4px; padding: 16px 22px; border: none !important; background: transparent !important; box-shadow: none !important; border-radius: 0; }
-.stat-card + .stat-card { border-left: 1px solid rgba(255, 255, 255, 0.12) !important; }
-.stat-card .stat-num { font-size: 26px; font-weight: 800; color: #ffffff; }
-.stat-card .stat-label { font-size: 13px; color: #9a9aa6; font-weight: 600; }
-.stat-cards .stat-card:nth-child(1) .stat-num { color: #8ee6b8; }
-.stat-cards .stat-card:nth-child(2) .stat-num { color: #ffffff; }
-.stat-cards .stat-card:nth-child(3) .stat-num { color: #f5dd90; }
-.stat-cards .stat-card:nth-child(4) .stat-num { color: #ffffff; }
+/* stat tiles (reference): clean white cards with an icon and a big number */
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 22px; }
+.stat-card { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; background: var(--color-canvas-inset); border: 1px solid var(--color-border); border-radius: 12px; box-shadow: var(--shadow-card); }
+.stat-card .stat-num { font-size: 28px; font-weight: 800; color: var(--color-text); }
+.stat-card .stat-label { font-size: 13px; color: var(--color-text-muted); font-weight: 600; }
+.stat-cards .stat-card:nth-child(1) .stat-num { color: #1f883d; }
+.stat-cards .stat-card:nth-child(2) .stat-num { color: #d4a017; }
+.stat-cards .stat-card:nth-child(3) .stat-num { color: #0969da; }
+.stat-cards .stat-card:nth-child(4) .stat-num { color: #cf222e; }
 
 /* ===== 2026 premium pass: bold type, ledger numerals, whitespace, micro-motion ===== */
 h1 { font-size: 28px; letter-spacing: -0.02em; }
@@ -305,13 +304,13 @@ section, .repo-section { scroll-margin-top: 80px; }
   height: 4px;
   margin-top: 7px;
   border-radius: 99px;
-  background: #17171c;
+  background: #1f883d;
 }
 .section-heading::after { margin-left: auto; margin-right: auto; }
 
 /* link color: deep teal-green, hover teal */
-a { color: #2f9e77; }
-a:hover { color: #21815f; }
+a { color: #1f883d; }
+a:hover { color: #1a7f37; }
 
 /* gradient text utility for headline numbers */
 .stat-card .stat-num { background: none; }
