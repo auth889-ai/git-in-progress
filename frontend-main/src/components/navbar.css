@@ -100,12 +100,13 @@
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
-.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #111827; }
+.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #4f46e5; }
 .dock-item.active {
-  background: #111827;
+  background: var(--gradient-primary);
   color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
 }
-.dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6)); }
+.dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5)); }
 .dock-icon { font-size: 16px; }
 body { padding-bottom: 90px; }
 
@@ -116,11 +117,11 @@ body { padding-bottom: 90px; }
   box-shadow: none;
 }
 .gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #111827; }
-.gh-navbar .gh-navbar-links a:hover { color: #2563eb; }
+.gh-navbar .gh-navbar-links a:hover { color: #4f46e5; }
 .gh-navbar .btn {
-  background: #111827; color: #ffffff; border: none;
+  background: #ffffff; color: #111827; border: 1px solid var(--color-border);
   border-radius: 999px; padding: 7px 18px;
 }
-.gh-navbar .btn:hover { background: #374151; }
-.gh-navbar .btn-primary { background: #111827; box-shadow: none; }
-.gh-navbar .btn-primary:hover { background: #374151; }
+.gh-navbar .btn:hover { border-color: #c7cbe0; background: #fafbff; }
+.gh-navbar .btn-primary { background: var(--gradient-primary); color: #ffffff; border: none; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35); }
+.gh-navbar .btn-primary:hover { background: linear-gradient(135deg, #5b52f0, #9d6bff); }

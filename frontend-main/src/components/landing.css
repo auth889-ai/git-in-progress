@@ -34,58 +34,74 @@
 
 .landing-footer { position: relative; z-index: 2; text-align: center; padding: 24px 0 32px; font-size: 13px; }
 
-/* ===== Travel-reference hero: dark forest panel + hot accent ===== */
+/* ===== Hero: deep indigo-navy photo panel (not pure black) ===== */
 .hero {
   background:
-    linear-gradient(145deg, rgba(10, 12, 18, 0.85), rgba(5, 6, 10, 0.92)),
+    linear-gradient(145deg, rgba(23, 23, 66, 0.88), rgba(12, 10, 40, 0.94)),
     url("https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=70") center/cover;
   border-radius: 28px;
   padding: 64px 40px 56px;
   color: #f9fafb;
   max-width: 980px;
-  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.4);
+  box-shadow: 0 24px 60px rgba(49, 46, 129, 0.45);
 }
 .hero h1 { color: #ffffff; }
 .gradient-text {
-  background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
+  background: linear-gradient(90deg, #818cf8, #38bdf8, #c084fc, #818cf8);
   background-size: 300% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: shimmer 6s linear infinite;
 }
-.hero-sub { color: #cfd6c4; }
+.hero-sub { color: #c7d2fe; }
 .hero .btn { background: rgba(255,255,255,.08); color: #f9fafb; border-color: rgba(255,255,255,.2); }
-.hero .btn-primary { background: #2563eb; border: none; border-radius: 999px; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
-.hero .btn-primary:hover { background: #1d4ed8; }
+.hero .btn-primary { background: linear-gradient(135deg, #6366f1, #a855f7); border: none; border-radius: 999px; box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5); }
+.hero .btn-primary:hover { background: linear-gradient(135deg, #4f46e5, #9333ea); }
 .flow-step { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); color: #f9fafb; }
-.flow-dot { background: #3b82f6; }
-@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.5); } 50% { box-shadow: 0 0 0 7px rgba(59,130,246,0); } }
-.flow-arrow { color: #cfd6c4; }
-.orb-a { background: #3b82f6; opacity: .14; }
-.orb-b { background: #111827; opacity: .10; }
-.orb-c { background: #60a5fa; opacity: .12; }
+.flow-dot { background: #38bdf8; }
+.flow .flow-step:nth-of-type(2) .flow-dot { background: #a78bfa; }
+.flow .flow-step:nth-of-type(3) .flow-dot { background: #fbbf24; }
+.flow .flow-step:nth-of-type(4) .flow-dot { background: #34d399; }
+.flow .flow-step:nth-of-type(5) .flow-dot { background: #f472b6; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(129,140,248,.5); } 50% { box-shadow: 0 0 0 7px rgba(129,140,248,0); } }
+.flow-arrow { color: #c7d2fe; }
+.orb-a { background: #6366f1; opacity: .18; }
+.orb-b { background: #0ea5e9; opacity: .14; }
+.orb-c { background: #a855f7; opacity: .16; }
 
-/* ===== Neumorphic feature tiles (soft-UI reference) ===== */
+/* ===== Feature tiles: white cards, each with its own accent color =====
+   The dev-tool landing pattern (Stripe/Linear): neutral card, colored icon chip
+   and a matching top border so the grid reads colorful but not noisy. */
 .feature-card {
-  background: #f7f5f1;
-  border: none;
-  border-radius: 22px;
-  box-shadow: 8px 8px 20px rgba(190, 185, 170, 0.45), -8px -8px 20px rgba(255, 255, 255, 0.9);
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--fc-accent, #4f46e5);
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.06);
 }
 .feature-card:hover {
-  box-shadow: 10px 10px 26px rgba(190, 185, 170, 0.55), -10px -10px 26px #ffffff;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--fc-accent, #4f46e5) 22%, transparent);
 }
 .feature-icon {
   display: inline-flex;
   padding: 12px;
   border-radius: 16px;
-  background: #f7f5f1;
-  box-shadow: inset 3px 3px 8px rgba(190,185,170,.4), inset -3px -3px 8px #ffffff;
+  background: color-mix(in srgb, var(--fc-accent, #4f46e5) 10%, #ffffff);
 }
+.feature-grid .feature-card:nth-child(1) { --fc-accent: #4f46e5; }
+.feature-grid .feature-card:nth-child(2) { --fc-accent: #e11d48; }
+.feature-grid .feature-card:nth-child(3) { --fc-accent: #0284c7; }
+.feature-grid .feature-card:nth-child(4) { --fc-accent: #0d9488; }
+.feature-grid .feature-card:nth-child(5) { --fc-accent: #8b5cf6; }
+.feature-grid .feature-card:nth-child(6) { --fc-accent: #d97706; }
 
-/* ---- stats band (dark cocoa strip) ---- */
-.stats-band { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 980px; margin: 10px auto 50px; background: #111111; border-radius: 24px; padding: 30px 24px; }
+/* ---- stats band (deep indigo strip, per-stat accent hues) ---- */
+.stats-band { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 980px; margin: 10px auto 50px; background: linear-gradient(135deg, #1e1b4b, #172554); border-radius: 24px; padding: 30px 24px; }
 .stats-band-item { text-align: center; display: flex; flex-direction: column; gap: 4px; }
-.stats-band-num { font-size: 30px; font-weight: 800; color: #60a5fa; font-variant-numeric: tabular-nums; }
-.stats-band-label { font-size: 13px; color: #9ca3af; }
+.stats-band-num { font-size: 30px; font-weight: 800; color: #818cf8; font-variant-numeric: tabular-nums; }
+.stats-band-item:nth-child(2) .stats-band-num { color: #38bdf8; }
+.stats-band-item:nth-child(3) .stats-band-num { color: #c084fc; }
+.stats-band-item:nth-child(4) .stats-band-num { color: #34d399; }
+.stats-band-label { font-size: 13px; color: #a5b4fc; }
 
 /* ---- how it works ---- */
 .section-heading { text-align: center; font-size: 26px; margin: 20px 0 24px; }
@@ -94,18 +110,20 @@
 .how-card { text-align: left; }
 .how-num { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%; background: var(--gradient-primary); color: #fff; font-weight: 800; margin-bottom: 10px; }
 
-/* ---- CTA band ---- */
-.cta-band { position: relative; z-index: 2; text-align: center; max-width: 980px; margin: 0 auto 60px; background: linear-gradient(145deg, #111111, #000000); color: #f9fafb; border-radius: 28px; padding: 50px 30px; }
+/* ---- CTA band: indigo→violet gradient, the page's color climax ---- */
+.cta-band { position: relative; z-index: 2; text-align: center; max-width: 980px; margin: 0 auto 60px; background: linear-gradient(135deg, #4f46e5, #7c3aed 55%, #9333ea); color: #f9fafb; border-radius: 28px; padding: 50px 30px; box-shadow: 0 20px 50px rgba(124, 58, 237, 0.35); }
 .cta-band h2 { color: #ffffff; font-size: 28px; }
-.cta-band p { color: #9ca3af; margin: 10px 0 22px; }
+.cta-band p { color: #ddd6fe; margin: 10px 0 22px; }
+.cta-band .btn-primary { background: #ffffff; color: #4f46e5; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+.cta-band .btn-primary:hover { background: #eef2ff; }
 
-/* ---- multi-column footer ---- */
-.site-footer { position: relative; z-index: 2; background: #111111; color: #9ca3af; margin: 0 -24px; padding: 48px 32px 20px; }
+/* ---- multi-column footer: deep navy, colored hover ---- */
+.site-footer { position: relative; z-index: 2; background: #0f1130; color: #a5b4fc; margin: 0 -24px; padding: 48px 32px 20px; }
 .footer-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 28px; max-width: 1100px; margin: 0 auto; }
 .footer-cols h4 { color: #f9fafb; margin-bottom: 12px; font-size: 14px; }
-.footer-cols a, .footer-cols span { display: block; color: #9ca3af; font-size: 13px; margin-bottom: 8px; }
-.footer-cols a:hover { color: #60a5fa; text-decoration: none; }
-.footer-bottom { text-align: center; border-top: 1px solid #27272a; margin-top: 36px; padding-top: 18px; font-size: 12px; }
+.footer-cols a, .footer-cols span { display: block; color: #a5b4fc; font-size: 13px; margin-bottom: 8px; }
+.footer-cols a:hover { color: #38bdf8; text-decoration: none; }
+.footer-bottom { text-align: center; border-top: 1px solid #2e2d5c; margin-top: 36px; padding-top: 18px; font-size: 12px; }
 @media (max-width: 760px) { .footer-cols { grid-template-columns: 1fr 1fr; } }
 
 /* ---- photos in step cards + showcase split ---- */
