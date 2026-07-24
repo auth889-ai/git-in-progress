@@ -1,4 +1,6 @@
-const { createTwoFilesPatch } = require("diff");
+const { createTwoFilesPatch, applyPatch } = require("diff");
+const fs = require("fs");
+const path = require("path");
 const File = require("../models/fileModel");
 const Commit = require("../models/commitModel");
 const Repository = require("../models/repoModel");
@@ -9,8 +11,30 @@ const MAX_PATCH_CHARS = 100 * 1024;
 const MAX_FILE_SIZE_B2 = 25 * 1024 * 1024; // 25 MB when Backblaze B2 is configured
 const DB_INLINE_LIMIT = 2 * 1024 * 1024;   // 2 MB stored inline in MongoDB otherwise
 
-// Launch-Control-style deterministic risk engine: weighted rules, no AI
+// Policy-as-code (Launch-Control style): weights and thresholds live in
+// config/risk-policy.json — tune release policy with zero code changes.
+const POLICY_PATH = path.join(__dirname, "..", "config", "risk-policy.json");
+const DEFAULT_POLICY = {
+  weights: { sensitiveFile: 50, fileDeleted: 15, maxDeletedCounted: 3, massDeletion: 20, veryLargeChange: 10, riskyKeyword: 10, tooManyFiles: 10, repeatedMistake: 15 },
+  thresholds: { goMax: 24, reviewMax: 59, massDeletionLines: 100, veryLargeChangeLines: 800, tooManyFilesCount: 20 },
+  patterns: { sensitive: "(^|/)(\\.env|secrets?|credentials?|id_rsa|\\.pem|password)", config: "package\\.json|dockerfile|\\.yml$|\\.yaml$|nginx|\\.config\\.", riskyMessage: "hotfix|urgent|quick.?fix|temp|hack" },
+};
+function loadRiskPolicy() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(POLICY_PATH, "utf8"));
+    return {
+      weights: { ...DEFAULT_POLICY.weights, ...raw.weights },
+      thresholds: { ...DEFAULT_POLICY.thresholds, ...raw.thresholds },
+      patterns: { ...DEFAULT_POLICY.patterns, ...raw.patterns },
+    };
+  } catch {
+    return DEFAULT_POLICY;
+  }
+}
+
+// Deterministic risk engine: weighted rules from the policy file, no AI
 function computePolicyRisk(changes, message) {
+  const { weights: W, thresholds: T, patterns: P } = loadRiskPolicy();
   let score = 0;
   const reasons = [];
   const add = (pts, why) => { score += pts; reasons.push(`+${pts} ${why}`); };
@@ -18,23 +42,62 @@ function computePolicyRisk(changes, message) {
   const totalDel = changes.reduce((a, c) => a + (c.deletions || 0), 0);
   const totalAdd = changes.reduce((a, c) => a + (c.additions || 0), 0);
   const deleted = changes.filter((c) => c.action === "deleted");
-  const sensitive = changes.filter((c) =>
-    /(^|\/)(\.env|secrets?|credentials?|id_rsa|\.pem|password)/i.test(c.path)
-  );
-  const configTouched = changes.filter((c) =>
-    /package\.json|dockerfile|\.yml$|\.yaml$|nginx|\.config\./i.test(c.path)
-  );
+  const sensitive = changes.filter((c) => new RegExp(P.sensitive, "i").test(c.path));
 
-  if (sensitive.length) add(50, `touches sensitive file(s): ${sensitive.map(c=>c.path).join(", ")}`);
-  if (deleted.length) add(15 * Math.min(deleted.length, 3), `${deleted.length} file(s) deleted — irreversible`);
-  if (totalDel > 100) add(20, `${totalDel} lines removed`);
-  if (totalAdd > 800) add(10, `very large change (+${totalAdd} lines)`);
-  if (/hotfix|urgent|quick.?fix|temp|hack/i.test(message || "")) add(10, "risky keyword in commit message");
-  if (changes.length > 20) add(10, `${changes.length} files in one commit`);
+  if (sensitive.length) add(W.sensitiveFile, `touches sensitive file(s): ${sensitive.map(c=>c.path).join(", ")}`);
+  if (deleted.length) add(W.fileDeleted * Math.min(deleted.length, W.maxDeletedCounted), `${deleted.length} file(s) deleted — irreversible`);
+  if (totalDel > T.massDeletionLines) add(W.massDeletion, `${totalDel} lines removed`);
+  if (totalAdd > T.veryLargeChangeLines) add(W.veryLargeChange, `very large change (+${totalAdd} lines)`);
+  if (new RegExp(P.riskyMessage, "i").test(message || "")) add(W.riskyKeyword, "risky keyword in commit message");
+  if (changes.length > T.tooManyFilesCount) add(W.tooManyFiles, `${changes.length} files in one commit`);
 
-  const verdict = score >= 60 ? "BLOCK" : score >= 25 ? "REVIEW" : "GO";
+  const verdict = score > T.reviewMax ? "BLOCK" : score > T.goMax ? "REVIEW" : "GO";
   if (!reasons.length) reasons.push("no risk signals detected");
-  return { score, verdict, reasons };
+  return { score, verdict, reasons, rollback: buildRollbackPlan(changes) };
+}
+
+// Time-Traveler style: every commit ships with its exact undo plan
+function buildRollbackPlan(changes) {
+  return changes.map((c) => {
+    if (c.action === "added") return `delete ${c.path} (it did not exist before this commit)`;
+    if (c.action === "deleted")
+      return c.reversePatch
+        ? `restore ${c.path} from the stored reverse diff`
+        : `re-create ${c.path} manually (no reverse diff stored)`;
+    return c.reversePatch
+      ? `apply the stored reverse diff to ${c.path}`
+      : `revert ${c.path} manually (no reverse diff stored)`;
+  });
+}
+
+// LORE-style institutional memory: warn when this commit touches files that
+// caused a REVIEW/BLOCK before — the team should not repeat the mistake.
+async function riskMemoryWarnings(repoId, changes) {
+  const paths = changes.map((c) => c.path);
+  if (!paths.length) return [];
+  const past = await Commit.find({
+    repository: repoId,
+    "policyRisk.verdict": { $in: ["REVIEW", "BLOCK"] },
+    "changes.path": { $in: paths },
+  })
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .select("message createdAt policyRisk.verdict changes.path");
+
+  const warnings = [];
+  const seen = new Set();
+  for (const old of past) {
+    const overlap = old.changes.filter((c) => paths.includes(c.path)).map((c) => c.path);
+    for (const p of overlap) {
+      if (seen.has(p)) continue;
+      seen.add(p);
+      warnings.push(
+        `${p} was part of a ${old.policyRisk.verdict} commit on ${old.createdAt.toISOString().slice(0, 10)} ("${old.message.slice(0, 60)}") — check that history before merging`
+      );
+      if (warnings.length >= 5) return warnings;
+    }
+  }
+  return warnings;
 }
 
 function b2FileKey(repoId, branch, path) {
@@ -43,6 +106,7 @@ function b2FileKey(repoId, branch, path) {
 
 function makePatch(path, oldContent, newContent) {
   const patch = createTwoFilesPatch(path, path, oldContent || "", newContent || "");
+  const reverse = createTwoFilesPatch(path, path, newContent || "", oldContent || "");
   let additions = 0;
   let deletions = 0;
   for (const line of patch.split("\n")) {
@@ -51,9 +115,30 @@ function makePatch(path, oldContent, newContent) {
   }
   return {
     patch: patch.length > MAX_PATCH_CHARS ? patch.slice(0, MAX_PATCH_CHARS) + "\n... [patch truncated]" : patch,
+    // Oversized reverse patches are dropped rather than truncated — a truncated
+    // reverse diff would corrupt the file on revert.
+    reversePatch: reverse.length > MAX_PATCH_CHARS ? "" : reverse,
     additions,
     deletions,
   };
+}
+
+// Full risk = deterministic rules + institutional memory (may raise the verdict)
+async function computeFullRisk(repoId, changes, message) {
+  const risk = computePolicyRisk(changes, message);
+  try {
+    const memory = await riskMemoryWarnings(repoId, changes);
+    if (memory.length) {
+      const { weights: W, thresholds: T } = loadRiskPolicy();
+      risk.memory = memory;
+      risk.score += W.repeatedMistake;
+      risk.reasons.push(`+${W.repeatedMistake} touches file(s) with a risky history (see memory)`);
+      risk.verdict = risk.score > T.reviewMax ? "BLOCK" : risk.score > T.goMax ? "REVIEW" : "GO";
+    }
+  } catch (err) {
+    console.error("risk memory lookup failed:", err.message);
+  }
+  return risk;
 }
 
 const MAX_FILES_PER_UPLOAD = 100;
@@ -149,7 +234,7 @@ async function uploadFiles(req, res) {
       branch,
       message: message?.trim() || `Add ${changes.length} file(s)`,
       changes,
-      policyRisk: computePolicyRisk(changes, message),
+      policyRisk: await computeFullRisk(id, changes, message),
     });
 
     res.status(201).json({ message: "Files uploaded!", commit });
@@ -232,7 +317,8 @@ async function deleteFile(req, res) {
       branch: file.branch || "main",
       message: `Delete ${file.path}`,
       changes: [{ path: file.path, action: "deleted", ...diffInfo }],
-      policyRisk: computePolicyRisk(
+      policyRisk: await computeFullRisk(
+        file.repository,
         [{ path: file.path, action: "deleted", ...diffInfo }],
         `Delete ${file.path}`
       ),
@@ -305,9 +391,134 @@ async function reviewCommit(req, res) {
   }
 }
 
+// POST /commit/:id/revert — one-click undo of a whole commit (Time-Traveler style).
+// Uses the reverse diffs stored at commit time; refuses with a conflict list if a
+// file changed since, instead of silently corrupting it.
+async function revertCommit(req, res) {
+  const { id } = req.params;
+  try {
+    const commit = await Commit.findById(id);
+    if (!commit) return res.status(404).json({ error: "Commit not found!" });
+
+    const repository = await Repository.findById(commit.repository);
+    if (!repository) return res.status(404).json({ error: "Repository not found!" });
+    if (String(repository.owner) !== String(req.user.id)) {
+      return res.status(403).json({ error: "Only the owner can revert commits!" });
+    }
+
+    const branch = commit.branch || "main";
+    const conflicts = [];
+    const skipped = [];
+    const applied = []; // { path, action, oldContent, newContent }
+
+    for (const c of commit.changes || []) {
+      const file = await File.findOne({ repository: commit.repository, branch, path: c.path });
+
+      if (c.action === "added") {
+        // Undo an add = delete the file
+        if (!file) { skipped.push(`${c.path} (already gone)`); continue; }
+        if (file.storage === "b2" || file.encoding === "base64") {
+          applied.push({ path: c.path, action: "deleted", file, oldContent: "", newContent: null });
+        } else {
+          applied.push({ path: c.path, action: "deleted", file, oldContent: file.content, newContent: null });
+        }
+        continue;
+      }
+
+      if (!c.reversePatch) { skipped.push(`${c.path} (no reverse diff stored)`); continue; }
+
+      if (c.action === "deleted") {
+        // Undo a delete = re-create the file from the reverse diff
+        if (file) { conflicts.push(`${c.path} (a new file exists at this path)`); continue; }
+        const restored = applyPatch("", c.reversePatch);
+        if (restored === false) { conflicts.push(`${c.path} (reverse diff did not apply)`); continue; }
+        applied.push({ path: c.path, action: "added", file: null, oldContent: "", newContent: restored });
+        continue;
+      }
+
+      // action === "updated": apply the reverse diff to the current content
+      if (!file) { conflicts.push(`${c.path} (file no longer exists)`); continue; }
+      let current;
+      if (file.storage === "b2") {
+        try {
+          current = (await b2Download(b2FileKey(commit.repository, branch, c.path))).toString("utf8");
+        } catch (err) {
+          conflicts.push(`${c.path} (could not load from B2: ${err.message})`);
+          continue;
+        }
+      } else {
+        current = file.content || "";
+      }
+      const reverted = applyPatch(current, c.reversePatch);
+      if (reverted === false) {
+        conflicts.push(`${c.path} (changed since this commit — revert manually)`);
+        continue;
+      }
+      applied.push({ path: c.path, action: "updated", file, oldContent: current, newContent: reverted });
+    }
+
+    if (conflicts.length) {
+      return res.status(409).json({
+        error: "Revert would conflict — nothing was changed.",
+        conflicts,
+      });
+    }
+    if (!applied.length) {
+      return res.status(400).json({ error: "Nothing revertable in this commit.", skipped });
+    }
+
+    // All clear — write the changes
+    const changes = [];
+    for (const a of applied) {
+      if (a.action === "deleted") {
+        await File.findByIdAndDelete(a.file._id);
+        if (a.file.storage === "b2") {
+          try { await b2Delete(b2FileKey(commit.repository, branch, a.path)); } catch (err) { console.error("B2 delete failed:", err.message); }
+        }
+        changes.push({ path: a.path, action: "deleted", ...makePatch(a.path, a.oldContent, "") });
+      } else {
+        let storage = "db";
+        let inline = a.newContent;
+        if (b2Configured()) {
+          try {
+            await b2Upload(b2FileKey(commit.repository, branch, a.path), a.newContent);
+            storage = "b2";
+            inline = "";
+          } catch (err) {
+            console.error("B2 upload failed on revert, storing inline:", err.message);
+          }
+        }
+        await File.findOneAndUpdate(
+          { repository: commit.repository, branch, path: a.path },
+          { content: inline, size: a.newContent.length, storage, encoding: "utf8" },
+          { upsert: true }
+        );
+        changes.push({ path: a.path, action: a.action, ...makePatch(a.path, a.oldContent, a.newContent) });
+      }
+    }
+
+    const message = `Revert: ${commit.message}`;
+    const revert = await Commit.create({
+      repository: commit.repository,
+      author: req.user.id,
+      branch,
+      message,
+      changes,
+      revertOf: commit._id,
+      policyRisk: await computeFullRisk(commit.repository, changes, message),
+    });
+
+    res.status(201).json({ message: "Commit reverted!", commit: revert, skipped });
+  } catch (err) {
+    console.error("Error reverting commit : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 module.exports = {
   uploadFiles,
   reviewCommit,
+  revertCommit,
   listFiles,
   getFile,
   deleteFile,

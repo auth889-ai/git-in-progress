@@ -12,6 +12,7 @@ import {
 import { API_URL } from "../../config";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import CommitHistory from "./CommitHistory";
 import "./repo.css";
 
 const EXT_LANG = {
@@ -26,29 +27,6 @@ function languageFor(path) {
   const ext = (path || "").split(".").pop().toLowerCase();
   return EXT_LANG[ext] || "text";
 }
-
-// GitHub-style green/red rendering of a unified diff
-const DiffView = ({ patch }) => {
-  if (!patch) return null;
-  return (
-    <pre className="diff-view">
-      {patch.split("\n").slice(2).map((line, i) => {
-        let cls = "";
-        if (line.startsWith("+") && !line.startsWith("+++")) cls = "diff-add";
-        else if (line.startsWith("-") && !line.startsWith("---")) cls = "diff-del";
-        else if (line.startsWith("@@")) cls = "diff-hunk";
-        return (
-          <div key={i} className={`diff-line ${cls}`}>
-            {line || " "}
-          </div>
-        );
-      })}
-    </pre>
-  );
-};
-
-const riskColor = (score) =>
-  score <= 4 ? "#059669" : score <= 7 ? "#d97706" : "#dc2626";
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
@@ -112,10 +90,6 @@ const RepoDetail = () => {
   const [mergeFrom, setMergeFrom] = useState("");
   const [branchNotice, setBranchNotice] = useState("");
   const [activeTab, setActiveTab] = useState("code");
-  const [expandedCommit, setExpandedCommit] = useState(null);
-  const [reviews, setReviews] = useState({});
-  const [reviewLoading, setReviewLoading] = useState(null);
-  const [reviewErrors, setReviewErrors] = useState({});
   const [openFile, setOpenFile] = useState(null);
   const [dirPath, setDirPath] = useState("");
   const [loading, setLoading] = useState(true);
@@ -270,22 +244,6 @@ const RepoDetail = () => {
       navigate(`/repository/${res.data.repositoryID}`);
     } catch (err) {
       setBranchNotice(err.response?.data?.error || "Fork failed.");
-    }
-  };
-
-  const handleAiReview = async (commit) => {
-    try {
-      setReviewLoading(commit._id);
-      setReviewErrors((prev) => ({ ...prev, [commit._id]: null }));
-      const res = await axios.post(`${API_URL}/commit/${commit._id}/review`);
-      setReviews((prev) => ({ ...prev, [commit._id]: res.data }));
-    } catch (err) {
-      setReviewErrors((prev) => ({
-        ...prev,
-        [commit._id]: err.response?.data?.error || "AI review failed.",
-      }));
-    } finally {
-      setReviewLoading(null);
     }
   };
 
@@ -883,157 +841,11 @@ const RepoDetail = () => {
 
         {activeTab === "commits" && (
           <div className="repo-section">
-            {commits.length === 0 ? (
-              <div className="card">
-                <p className="text-muted">No commits yet.</p>
-              </div>
-            ) : (
-              <div className="issue-list">
-                {commits.map((commit) => {
-                  const review = reviews[commit._id] || commit.aiReview;
-                  const hasReview = Boolean(review?.summary);
-                  const isOpen = expandedCommit === commit._id;
-                  const totals = (commit.changes || []).reduce(
-                    (acc, c) => ({
-                      add: acc.add + (c.additions || 0),
-                      del: acc.del + (c.deletions || 0),
-                    }),
-                    { add: 0, del: 0 }
-                  );
-                  return (
-                    <div key={commit._id} className="commit-block">
-                      <div className="issue-row">
-                        <CommitIcon />
-                        <div className="issue-row-body">
-                          <div className="issue-row-title">
-                            {commit.message}
-                            {commit.policyRisk?.verdict && (
-                              <span
-                                className={`risk-verdict risk-${commit.policyRisk.verdict.toLowerCase()}`}
-                                title={(commit.policyRisk.reasons || []).join("\n")}
-                              >
-                                {commit.policyRisk.verdict === "GO" ? "✅ GO" :
-                                 commit.policyRisk.verdict === "REVIEW" ? "⚠️ REVIEW" : "🚫 BLOCK"}
-                                {" "}{commit.policyRisk.score}
-                              </span>
-                            )}
-                          </div>
-                          <div className="issue-row-desc">
-                            {commit.changes
-                              ?.map((c) => `${c.action}: ${c.path}`)
-                              .join(" · ")}
-                          </div>
-                          <div className="issue-row-meta">
-                            {commit.author?.username || "unknown"} committed{" "}
-                            {timeAgo(commit.createdAt)}
-                            {"  "}
-                            <span className="diff-stat-add">+{totals.add}</span>{" "}
-                            <span className="diff-stat-del">−{totals.del}</span>
-                          </div>
-                        </div>
-                        <div className="issue-row-actions">
-                          <button
-                            className="btn"
-                            onClick={() =>
-                              setExpandedCommit(isOpen ? null : commit._id)
-                            }
-                          >
-                            {isOpen ? "Hide diff" : "View diff"}
-                          </button>
-                          <button
-                            className="btn btn-primary"
-                            disabled={reviewLoading === commit._id}
-                            onClick={() =>
-                              hasReview
-                                ? setExpandedCommit(commit._id)
-                                : handleAiReview(commit)
-                            }
-                          >
-                            {reviewLoading === commit._id
-                              ? "Reviewing…"
-                              : hasReview
-                              ? "AI Review ✓"
-                              : "AI Review"}
-                          </button>
-                        </div>
-                      </div>
-
-                      {reviewErrors[commit._id] && (
-                        <div className="flash-error" style={{ margin: "0 16px 12px" }}>
-                          {reviewErrors[commit._id]}
-                        </div>
-                      )}
-
-                      {hasReview && (isOpen || reviews[commit._id]) && (
-                        <div className="ai-review-card">
-                          <div className="ai-review-header">
-                            <b>🤖 AI Review</b>
-                            <span
-                              className="risk-badge"
-                              style={{ backgroundColor: riskColor(review.riskScore) }}
-                            >
-                              Risk {review.riskScore}/10
-                            </span>
-                            <span className="text-muted" style={{ fontSize: 12 }}>
-                              via {review.provider}
-                            </span>
-                          </div>
-                          <p>{review.summary}</p>
-                          {review.issues?.length > 0 && (
-                            <div>
-                              <b>Potential issues</b>
-                              <ul>
-                                {review.issues.map((issue, i) => (
-                                  <li key={i}>{issue}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {review.suggestions?.length > 0 && (
-                            <div>
-                              <b>Suggestions</b>
-                              <ul>
-                                {review.suggestions.map((sug, i) => (
-                                  <li key={i}>{sug}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {isOpen &&
-                        !(commit.changes || []).some((c) => c.patch) && (
-                          <p className="spinner-note">
-                            No diff stored for this commit (binary files, or created
-                            before diff support was added).
-                          </p>
-                        )}
-                      {isOpen &&
-                        (commit.changes || []).map(
-                          (c) =>
-                            c.patch && (
-                              <div key={c._id || c.path} className="commit-diff">
-                                <div className="commit-diff-header">
-                                  <span>{c.path}</span>
-                                  <span>
-                                    <span className="diff-stat-add">
-                                      +{c.additions || 0}
-                                    </span>{" "}
-                                    <span className="diff-stat-del">
-                                      −{c.deletions || 0}
-                                    </span>
-                                  </span>
-                                </div>
-                                <DiffView patch={c.patch} />
-                              </div>
-                            )
-                        )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <CommitHistory
+              commits={commits}
+              isOwner={isOwner}
+              onChanged={fetchCommits}
+            />
           </div>
         )}
 

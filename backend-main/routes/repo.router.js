@@ -31,5 +31,6 @@ repoRouter.patch("/repo/star/:id", authMiddleware, repoController.toggleStarById
 repoRouter.delete("/repo/delete/:id", authMiddleware, repoController.deleteRepositoryById);
 repoRouter.delete("/file/:id", authMiddleware, fileController.deleteFile);
 repoRouter.post("/commit/:id/review", authMiddleware, fileController.reviewCommit);
+repoRouter.post("/commit/:id/revert", authMiddleware, fileController.revertCommit);
 
 module.exports = repoRouter;

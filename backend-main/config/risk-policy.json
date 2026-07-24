@@ -1,0 +1,24 @@
+{
+  "weights": {
+    "sensitiveFile": 50,
+    "fileDeleted": 15,
+    "maxDeletedCounted": 3,
+    "massDeletion": 20,
+    "veryLargeChange": 10,
+    "riskyKeyword": 10,
+    "tooManyFiles": 10,
+    "repeatedMistake": 15
+  },
+  "thresholds": {
+    "goMax": 24,
+    "reviewMax": 59,
+    "massDeletionLines": 100,
+    "veryLargeChangeLines": 800,
+    "tooManyFilesCount": 20
+  },
+  "patterns": {
+    "sensitive": "(^|/)(\\.env|secrets?|credentials?|id_rsa|\\.pem|password)",
+    "config": "package\\.json|dockerfile|\\.yml$|\\.yaml$|nginx|\\.config\\.",
+    "riskyMessage": "hotfix|urgent|quick.?fix|temp|hack"
+  }
+}

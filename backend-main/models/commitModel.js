@@ -35,6 +35,8 @@ const CommitSchema = new Schema(
         },
         // Unified diff for this file (green/red viewer + AI review input)
         patch: String,
+        // Reverse diff — lets a commit be undone with one click (Time-Traveler style)
+        reversePatch: String,
         additions: Number,
         deletions: Number,
       },
@@ -44,7 +46,13 @@ const CommitSchema = new Schema(
       score: Number,
       verdict: { type: String, enum: ["GO", "REVIEW", "BLOCK"] },
       reasons: [String],
+      // LORE-style institutional memory: past risky commits touching the same files
+      memory: [String],
+      // Exact undo steps for this commit
+      rollback: [String],
     },
+    // Set when this commit was created by reverting another commit
+    revertOf: { type: Schema.Types.ObjectId, ref: "Commit" },
     // Cached AI review of this commit's diff
     aiReview: {
       summary: String,

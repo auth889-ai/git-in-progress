@@ -663,3 +663,25 @@
 .risk-go { background: rgba(16,185,129,.12); color: #047857; border: 1px solid rgba(16,185,129,.4); }
 .risk-review { background: rgba(245,158,11,.14); color: #b45309; border: 1px solid rgba(245,158,11,.4); }
 .risk-block { background: rgba(239,68,68,.12); color: #b91c1c; border: 1px solid rgba(239,68,68,.45); }
+
+/* ---- risk gate evidence panel (Launch-Control style breakdown) ---- */
+.risk-evidence {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 0 16px 12px;
+  padding: 14px 16px;
+  background: linear-gradient(150deg, #e2f2e9, #ffffff 75%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(77, 155, 114, 0.12);
+  font-size: 13px;
+}
+.risk-evidence-col b { display: block; margin-bottom: 6px; }
+.risk-evidence-col ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; }
+.risk-evidence-col.risk-memory {
+  background: linear-gradient(150deg, #fdf3e3, #ffffff 75%);
+  margin: -6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
