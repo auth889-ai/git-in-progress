@@ -103,3 +103,52 @@
   text-align: center;
   font-size: 14px;
 }
+
+/* ---- two-column auth with animated visual panel (reference screens 1-2) ---- */
+.auth-split {
+  display: grid;
+  grid-template-columns: 400px 460px;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.auth-visual {
+  position: relative;
+  border-radius: 24px;
+  overflow: visible;
+  animation: riseIn 0.6s 0.2s ease both;
+}
+.auth-visual-img {
+  width: 100%;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.3);
+}
+.auth-chip {
+  position: absolute;
+  padding: 9px 14px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.14);
+  animation: chipFloat 4s ease-in-out infinite;
+  white-space: nowrap;
+}
+.chip-a { top: 26px; left: -30px; animation-delay: 0s; }
+.chip-b { top: 45%; right: -40px; animation-delay: 1s; }
+.chip-c { bottom: 90px; left: -24px; animation-delay: 2s; }
+.chip-d { bottom: 24px; right: 30px; animation-delay: 3s; }
+@keyframes chipFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@media (max-width: 900px) {
+  .auth-split { grid-template-columns: 1fr; max-width: 420px; }
+  .auth-visual { display: none; }
+}

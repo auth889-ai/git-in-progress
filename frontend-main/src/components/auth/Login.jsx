@@ -57,6 +57,7 @@ const Login = () => {
         <img className="logo-login" src={logo} alt="Logo" />
       </div>
 
+      <div className="auth-split">
       <div className="login-box-wrapper">
         <div className="login-heading">
           <Box sx={{ padding: 1 }}>
@@ -107,6 +108,19 @@ const Login = () => {
             New to GitHub? <Link to="/signup">Create an account</Link>
           </p>
         </div>
+      </div>
+
+        <aside className="auth-visual">
+          <img
+            className="auth-visual-img"
+            alt="developer coding"
+            src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=900&q=70"
+          />
+          <div className="auth-chip chip-a">✅ Commit merged</div>
+          <div className="auth-chip chip-b">🤖 AI review passed · risk 2/10</div>
+          <div className="auth-chip chip-c">⭐ ui-library starred</div>
+          <div className="auth-chip chip-d">☁️ Synced to B2 cloud</div>
+        </aside>
       </div>
     </div>
   );
