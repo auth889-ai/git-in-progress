@@ -267,3 +267,51 @@ body .dashboard-repo-item:hover { color: #7dd3fc; }
 body .btn:active { transform: translateY(0) scale(0.98); }
 body .avatar { transition: transform 0.2s ease; }
 body .avatar:hover { transform: scale(1.04) rotate(-2deg); }
+
+/* ===== Premium glassmorphism pass ===== */
+body .card, body .file-list, body .issue-list {
+  background: linear-gradient(160deg, rgba(23, 33, 64, 0.85), rgba(13, 20, 40, 0.92));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(125, 145, 210, 0.16);
+  position: relative;
+}
+body .card::before, body .file-list::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99,102,241,.45), transparent 40%, transparent 60%, rgba(6,182,212,.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+body .card:hover::before, body .file-list:hover::before { opacity: 1; }
+body .card:hover { box-shadow: 0 8px 40px rgba(6, 182, 212, 0.12), 0 2px 8px rgba(0,0,0,.4); }
+
+body .gh-navbar {
+  background: linear-gradient(180deg, rgba(13,20,40,.95), rgba(11,17,32,.85));
+  border-bottom: 1px solid rgba(125,145,210,.14);
+}
+
+body .btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+body .btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: skewX(-20deg);
+  transition: left .5s ease;
+}
+body .btn-primary:hover::after { left: 125%; }
+
+::selection { background: rgba(6,182,212,.35); }
+html { scroll-behavior: smooth; }
