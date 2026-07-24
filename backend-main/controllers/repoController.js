@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const Repository = require("../models/repoModel");
+// Register referenced models so .populate("owner", "username email") / .populate("issues") work
+const User = require("../models/userModel");
+require("../models/issueModel");
 
 async function createRepository(req, res) {
   const { owner, name, issues, content, description, visibility } = req.body;
@@ -37,7 +40,7 @@ async function createRepository(req, res) {
 async function getAllRepositories(req, res) {
   try {
     const repositories = await Repository.find({})
-      .populate("owner")
+      .populate("owner", "username email")
       .populate("issues");
 
     res.json(repositories);
@@ -51,7 +54,8 @@ async function fetchRepositoryById(req, res) {
   const { id } = req.params;
   try {
     const repository = await Repository.find({ _id: id })
-      .populate("owner")
+      .populate("owner", "username email")
+      .populate("forkedFrom", "name")
       .populate("issues");
 
     res.json(repository);
@@ -65,7 +69,7 @@ async function fetchRepositoryByName(req, res) {
   const { name } = req.params;
   try {
     const repository = await Repository.find({ name })
-      .populate("owner")
+      .populate("owner", "username email")
       .populate("issues");
 
     res.json(repository);
@@ -160,9 +164,86 @@ async function deleteRepositoryById(req, res) {
   }
 }
 
+// PATCH /repo/star/:id — toggle a star for the logged-in user
+async function toggleStarById(req, res) {
+  const { id } = req.params;
+
+  try {
+    const repository = await Repository.findById(id);
+    if (!repository) {
+      return res.status(404).json({ error: "Repository not found!" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
+    }
+
+    const index = user.starRepos.findIndex((r) => String(r) === String(id));
+    let starred;
+    if (index >= 0) {
+      user.starRepos.splice(index, 1);
+      starred = false;
+    } else {
+      user.starRepos.push(id);
+      starred = true;
+    }
+    await user.save();
+
+    const starCount = await User.countDocuments({ starRepos: id });
+    res.json({ starred, starCount });
+  } catch (err) {
+    console.error("Error toggling star : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
+// GET /repo/star/:id/status?userId=… — star state + count for a repo
+async function getStarStatus(req, res) {
+  const { id } = req.params;
+  const { userId } = req.query;
+
+  try {
+    const starCount = await User.countDocuments({ starRepos: id });
+    let starred = false;
+    if (userId) {
+      const user = await User.findById(userId).select("starRepos");
+      starred = Boolean(
+        user && user.starRepos.some((r) => String(r) === String(id))
+      );
+    }
+    res.json({ starred, starCount });
+  } catch (err) {
+    console.error("Error fetching star status : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
+// GET /repo/starred/:userId — repositories a user has starred
+async function getStarredRepositories(req, res) {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findById(userId).populate({
+      path: "starRepos",
+      populate: { path: "owner", select: "username" },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
+    }
+    res.json(user.starRepos || []);
+  } catch (err) {
+    console.error("Error fetching starred repositories : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 module.exports = {
   createRepository,
   getAllRepositories,
+  toggleStarById,
+  getStarStatus,
+  getStarredRepositories,
   fetchRepositoryById,
   fetchRepositoryByName,
   fetchRepositoriesForCurrentUser,

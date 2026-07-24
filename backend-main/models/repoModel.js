@@ -30,6 +30,19 @@ const RepositorySchema = new Schema(
         ref: "Issue",
       },
     ],
+    defaultBranch: {
+      type: String,
+      default: "main",
+    },
+    branches: {
+      type: [String],
+      default: ["main"],
+    },
+    forkedFrom: {
+      type: Schema.Types.ObjectId,
+      ref: "Repository",
+      default: null,
+    },
   },
   { timestamps: true }
 );

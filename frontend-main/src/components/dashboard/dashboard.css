@@ -1,5 +1,138 @@
-#dashboard {
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  align-items: start;
+}
+
+.dashboard-sidebar {
   display: flex;
-  width: 1080px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-sidebar-header {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
+}
+
+.dashboard-sidebar-header h3 {
+  font-size: 14px;
+}
+
+.dashboard-repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dashboard-repo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+.dashboard-repo-item svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+.dashboard-repo-item:hover {
+  color: var(--color-accent);
+}
+
+.dashboard-main h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.repo-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.repo-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.repo-card-title a {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.repo-card-desc {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.repo-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.dashboard-events {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-events h3 {
+  font-size: 14px;
+}
+
+.dashboard-events ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboard-events li {
+  border-bottom: 1px solid var(--color-border-muted);
+  padding-bottom: 10px;
+  font-size: 13px;
+}
+.dashboard-events li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dashboard-events li span {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+@media screen and (max-width: 1080px) {
+  .dashboard-layout {
+    grid-template-columns: 240px 1fr;
+  }
+  .dashboard-aside-right {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
 }

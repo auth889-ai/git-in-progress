@@ -53,7 +53,7 @@ async function signup(req, res) {
     const token = jwt.sign(
       { id: result.insertedId },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
     res.json({ token, userId: result.insertedId });
   } catch (err) {
@@ -80,7 +80,7 @@ async function login(req, res) {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
     res.json({ token, userId: user._id });
   } catch (err) {

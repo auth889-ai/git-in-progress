@@ -16,7 +16,7 @@ const { pushRepo } = require("./controllers/push");
 const { pullRepo } = require("./controllers/pull");
 const { revertRepo } = require("./controllers/revert");
 
-dotenv.config();
+dotenv.config({ path: require("path").join(__dirname, ".env") });
 
 yargs(hideBin(process.argv))
   .command("start", "Starts a new server", {}, startServer)
@@ -69,7 +69,8 @@ function startServer() {
   const app = express();
   const port = process.env.PORT || 3000;
 
-  app.use(express.json());
+  // Large limit so multi-file uploads (up to 25 MB per file) can come through
+  app.use(express.json({ limit: "60mb" }));
 
   const mongoURI = process.env.MONGODB_URI;
 

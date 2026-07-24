@@ -1,14 +1,35 @@
 # Dependencies
 node_modules/
 
-# Environment variables
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
 
 # Build output
 dist/
+build/
 
-# Local repo data created by the CLI
+# Local repository data created by the CLI
 .apnaGit/
 
-# macOS
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating system files
 .DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Private planning notes
+UPGRADE_PLAN.md
+notes.md
+
+# Private local folder
+eva/UPGRADE_PLAN.md

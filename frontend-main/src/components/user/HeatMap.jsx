@@ -1,67 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import HeatMap from "@uiw/react-heat-map";
 
-// Function to generate random activity
-const generateActivityData = (startDate, endDate) => {
-  const data = [];
-  let currentDate = new Date(startDate);
-  const end = new Date(endDate);
-
-  while (currentDate <= end) {
-    const count = Math.floor(Math.random() * 50);
-    data.push({
-      date: currentDate.toISOString().split("T")[0], //YYY-MM-DD
-      count: count,
-    });
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return data;
+// Violet contribution scale to match the premium light theme
+const PANEL_COLORS = {
+  0: "#eef0f6",
+  1: "#ddd6fe",
+  3: "#a78bfa",
+  6: "#8b5cf6",
+  10: "#6d28d9",
 };
 
-const getPanelColors = (maxCount) => {
-  const colors = {};
-  for (let i = 0; i <= maxCount; i++) {
-    const greenValue = Math.floor((i / maxCount) * 255);
-    colors[i] = `rgb(0, ${greenValue}, 0)`;
+// Aggregate raw ISO timestamps into { date, count } per day
+function buildActivity(timestamps) {
+  const counts = {};
+  for (const ts of timestamps) {
+    if (!ts) continue;
+    const day = new Date(ts).toISOString().split("T")[0].replace(/-/g, "/");
+    counts[day] = (counts[day] || 0) + 1;
   }
+  return Object.entries(counts).map(([date, count]) => ({ date, count }));
+}
 
-  return colors;
-};
+const HeatMapProfile = ({ timestamps = [] }) => {
+  const activityData = buildActivity(timestamps);
 
-const HeatMapProfile = () => {
-  const [activityData, setActivityData] = useState([]);
-  const [panelColors, setPanelColors] = useState({});
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 6);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const startDate = "2001-01-01";
-      const endDate = "2001-01-31";
-      const data = generateActivityData(startDate, endDate);
-      setActivityData(data);
-
-      const maxCount = Math.max(...data.map((d) => d.count));
-      setPanelColors(getPanelColors(maxCount));
-    };
-
-    fetchData();
-  }, []);
+  const total = timestamps.filter(Boolean).length;
 
   return (
     <div>
-      <h4>Recent Contributions</h4>
+      <h4 style={{ marginBottom: 12 }}>
+        {total} contribution{total === 1 ? "" : "s"} in the last 6 months
+      </h4>
       <HeatMap
         className="HeatMapProfile"
-        style={{ maxWidth: "700px", height: "200px", color: "white" }}
+        style={{ width: "100%", color: "#64748b" }}
         value={activityData}
-        weekLabels={["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]}
-        startDate={new Date("2001-01-01")}
-        rectSize={15}
+        weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
+        startDate={startDate}
+        endDate={new Date()}
+        rectSize={12}
         space={3}
-        rectProps={{
-          rx: 2.5,
-        }}
-        panelColors={panelColors}
+        rectProps={{ rx: 2 }}
+        panelColors={PANEL_COLORS}
       />
     </div>
   );

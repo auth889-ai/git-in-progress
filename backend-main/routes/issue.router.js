@@ -1,12 +1,16 @@
 const express = require("express");
 const issueController = require("../controllers/issueController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const issueRouter = express.Router();
 
-issueRouter.post("/issue/create/:id", issueController.createIssue);
-issueRouter.put("/issue/update/:id", issueController.updateIssueById);
-issueRouter.delete("/issue/delete/:id", issueController.deleteIssueById);
+// Public reads
 issueRouter.get("/issue/all/:id", issueController.getAllIssues);
 issueRouter.get("/issue/:id", issueController.getIssueById);
+
+// Writes require a valid JWT
+issueRouter.post("/issue/create/:id", authMiddleware, issueController.createIssue);
+issueRouter.put("/issue/update/:id", authMiddleware, issueController.updateIssueById);
+issueRouter.delete("/issue/delete/:id", authMiddleware, issueController.deleteIssueById);
 
 module.exports = issueRouter;

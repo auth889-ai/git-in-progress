@@ -1,56 +1,50 @@
 import React, { useEffect } from "react";
-import {useNavigate, useRoutes} from 'react-router-dom'
+import { useNavigate, useRoutes, useLocation } from "react-router-dom";
 
-// Pages List
+// Pages
 import Dashboard from "./components/dashboard/Dashboard";
 import Profile from "./components/user/Profile";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import CreateRepo from "./components/repo/CreateRepo";
+import RepoDetail from "./components/repo/RepoDetail";
 
 // Auth Context
 import { useAuth } from "./authContext";
 
-const ProjectRoutes = ()=>{
-    const {currentUser, setCurrentUser} = useAuth();
-    const navigate = useNavigate();
+const PUBLIC_PATHS = ["/auth", "/signup"];
 
-    useEffect(()=>{
-        const userIdFromStorage = localStorage.getItem("userId");
+const ProjectRoutes = () => {
+  const { currentUser, setCurrentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-        if(userIdFromStorage && !currentUser){
-            setCurrentUser(userIdFromStorage);
-        }
+  useEffect(() => {
+    const userIdFromStorage = localStorage.getItem("userId");
 
-        if(!userIdFromStorage && !["/auth", "/signup"].includes(window.location.pathname))
-        {
-            navigate("/auth");
-        }
+    if (userIdFromStorage && !currentUser) {
+      setCurrentUser(userIdFromStorage);
+    }
 
-        if(userIdFromStorage && ["/auth", "/signup"].includes(window.location.pathname)){
-            navigate("/");
-        }
-    }, [currentUser, navigate, setCurrentUser]);
+    if (!userIdFromStorage && !PUBLIC_PATHS.includes(location.pathname)) {
+      navigate("/auth");
+    }
 
-    let element = useRoutes([
-        {
-            path:"/",
-            element:<Dashboard/>
-        },
-        {
-            path:"/auth",
-            element:<Login/>
-        },
-        {
-            path:"/signup",
-            element:<Signup/>
-        },
-        {
-            path:"/profile",
-            element:<Profile/>
-        }
-    ]);
+    if (userIdFromStorage && PUBLIC_PATHS.includes(location.pathname)) {
+      navigate("/");
+    }
+  }, [currentUser, navigate, setCurrentUser, location.pathname]);
 
-    return element;
-}
+  const element = useRoutes([
+    { path: "/", element: <Dashboard /> },
+    { path: "/auth", element: <Login /> },
+    { path: "/signup", element: <Signup /> },
+    { path: "/profile", element: <Profile /> },
+    { path: "/create", element: <CreateRepo /> },
+    { path: "/repository/:id", element: <RepoDetail /> },
+  ]);
+
+  return element;
+};
 
 export default ProjectRoutes;

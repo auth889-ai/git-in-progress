@@ -1,0 +1,509 @@
+.repo-page {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.repo-page-wide {
+  max-width: 1012px;
+}
+
+.repo-page-header {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.repo-page-header h1 {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.repo-page-header .subtitle {
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.visibility-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: border-color 0.12s ease;
+}
+.visibility-option:hover {
+  border-color: var(--color-text-muted);
+}
+.visibility-option.selected {
+  border-color: var(--color-primary);
+  background-color: rgba(99, 102, 241, 0.06);
+}
+.visibility-option input {
+  margin-top: 3px;
+}
+.visibility-option .option-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.visibility-option .option-desc {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- repository detail ---- */
+.repo-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.repo-detail-title h1 {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.repo-detail-title h1 .repo-owner {
+  color: var(--color-accent);
+}
+
+.repo-detail-title h1 .repo-name-strong {
+  font-weight: 600;
+}
+
+.repo-detail-desc {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+}
+
+.repo-detail-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  flex-wrap: wrap;
+}
+
+.repo-section {
+  margin-bottom: 24px;
+}
+
+.repo-section > h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.issue-list {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.issue-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border-muted);
+  background-color: var(--color-canvas-subtle);
+}
+.issue-row:last-child {
+  border-bottom: none;
+}
+
+.issue-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.issue-row-title {
+  font-weight: 600;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.issue-row-desc {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+
+.issue-row-meta {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.issue-row-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.issue-row-actions .btn {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.danger-zone {
+  background-color: #ffffff;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.danger-zone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.danger-zone-row .row-text b {
+  display: block;
+  font-size: 14px;
+}
+.danger-zone-row .row-text span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+@media screen and (max-width: 560px) {
+  .repo-page {
+    padding: 16px;
+  }
+}
+
+/* ---- tabs ---- */
+.repo-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.repo-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.repo-tab:hover {
+  color: var(--color-text);
+}
+.repo-tab.active {
+  color: var(--color-primary-deep);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ---- star button ---- */
+.star-btn {
+  margin-left: auto;
+}
+.star-count {
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 2em;
+}
+
+/* ---- file browser ---- */
+.file-list {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border-muted);
+}
+.file-row:last-child {
+  border-bottom: none;
+}
+.file-row:hover {
+  background: var(--color-canvas-subtle);
+}
+.file-row svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.file-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-accent);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+.file-link:hover {
+  text-decoration: underline;
+}
+
+.file-meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.file-delete {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+/* ---- code viewer ---- */
+.code-viewer {
+  padding: 0;
+  overflow: hidden;
+}
+
+.code-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-canvas-subtle);
+  overflow-wrap: anywhere;
+}
+
+.code-viewer pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: #fdfdff;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+/* ---- upload ---- */
+.upload-pickers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pending-files {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pending-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  background: var(--color-canvas-subtle);
+  border: 1px solid var(--color-border-muted);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.pending-file svg {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.pending-remove {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+.pending-remove:hover {
+  color: var(--color-danger);
+}
+
+/* ---- branch bar ---- */
+.branch-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.branch-select {
+  width: auto;
+  min-width: 130px;
+  font-weight: 600;
+}
+
+.branch-create,
+.branch-merge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-create .form-input {
+  width: 180px;
+}
+
+.branch-notice {
+  margin-bottom: 16px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--color-primary-deep);
+  background: rgba(99, 102, 241, 0.07);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 8px;
+}
+
+/* ---- diffs ---- */
+.commit-block {
+  border-bottom: 1px solid var(--color-border-muted);
+}
+.commit-block:last-child {
+  border-bottom: none;
+}
+.commit-block > .issue-row {
+  border-bottom: none;
+}
+
+.diff-stat-add {
+  color: #059669;
+  font-weight: 600;
+}
+.diff-stat-del {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.commit-diff {
+  margin: 0 16px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.commit-diff-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-canvas-subtle);
+  border-bottom: 1px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+.diff-view {
+  margin: 0;
+  padding: 8px 0;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.diff-line {
+  padding: 0 12px;
+  white-space: pre;
+}
+.diff-line.diff-add {
+  background: #dcfce7;
+  color: #14532d;
+}
+.diff-line.diff-del {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+.diff-line.diff-hunk {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+/* ---- AI review card ---- */
+.ai-review-card {
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.ai-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.risk-badge {
+  padding: 2px 10px;
+  border-radius: 2em;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ai-review-card ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+.ai-review-card li {
+  margin-bottom: 2px;
+}
