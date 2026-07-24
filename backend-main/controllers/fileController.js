@@ -254,6 +254,35 @@ async function listUserCommits(req, res) {
   }
 }
 
+// GET /commits/recent — latest commits across public repos with gate verdicts,
+// powering the dashboard's live risk-gate feed
+async function listRecentCommits(req, res) {
+  try {
+    const publicRepos = await Repository.find({ visibility: { $ne: false } }).select("_id name");
+    const nameById = new Map(publicRepos.map((r) => [String(r._id), r.name]));
+    const commits = await Commit.find({ repository: { $in: publicRepos.map((r) => r._id) } })
+      .select("message createdAt repository author policyRisk.verdict policyRisk.score")
+      .populate("author", "username")
+      .sort({ createdAt: -1 })
+      .limit(15);
+    res.json(
+      commits.map((c) => ({
+        _id: c._id,
+        message: c.message,
+        createdAt: c.createdAt,
+        repository: c.repository,
+        repoName: nameById.get(String(c.repository)) || "unknown",
+        author: c.author?.username || "unknown",
+        verdict: c.policyRisk?.verdict,
+        score: c.policyRisk?.score,
+      }))
+    );
+  } catch (err) {
+    console.error("Error listing recent commits : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 // POST /commit/:id/review — generate (or return cached) AI review for a commit
 async function reviewCommit(req, res) {
   const { id } = req.params;
@@ -491,4 +520,5 @@ module.exports = {
   deleteFile,
   listCommits,
   listUserCommits,
+  listRecentCommits,
 };

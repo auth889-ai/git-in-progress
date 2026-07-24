@@ -8,7 +8,7 @@
   --color-canvas-inset: #ffffff;
   --color-border: #e0e8e1;
   --color-border-muted: #eaf1ea;
-  --color-text: #17251c;
+  --color-text: #101812;
   --color-text-muted: #5c6f62;
   --color-accent: #3f8f68;
   --color-primary: #3f8f68;
@@ -67,7 +67,7 @@ a:hover {
 h1, h2, h3, h4 {
   margin: 0;
   font-weight: 700;
-  color: #14231a;
+  color: #0f1711;
   letter-spacing: -0.01em;
 }
 

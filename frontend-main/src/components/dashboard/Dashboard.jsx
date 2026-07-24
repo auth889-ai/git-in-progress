@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import { RepoIcon, LockIcon, timeAgo } from "../Icons";
+import Toolbox from "./Toolbox";
+import GateFeed from "./GateFeed";
 import { API_URL } from "../../config";
 import "./dashboard.css";
 
@@ -90,6 +92,9 @@ const Dashboard = () => {
             <div className="card stat-card"><span className="stat-num">{allRepositories.length}</span><span className="stat-label">🌐 Public repositories</span></div>
             <div className="card stat-card"><span className="stat-num">{allRepositories.reduce((a, r) => a + (r.issues?.length || 0), 0)}</span><span className="stat-label">🐛 Total issues</span></div>
           </div>
+          <h2>Risk gate activity</h2>
+          <GateFeed />
+
           <h2>Explore repositories</h2>
           {loading ? (
             <p className="spinner-note">Loading repositories…</p>
@@ -132,6 +137,7 @@ const Dashboard = () => {
         </main>
 
         <aside className="dashboard-aside-right">
+          <Toolbox />
           <div className="card dashboard-events">
             <h3>Latest activity</h3>
             {allRepositories.length === 0 ? (

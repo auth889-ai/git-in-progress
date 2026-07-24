@@ -19,6 +19,7 @@ repoRouter.get("/repo/:id/health", fileController.getRepoHealth);
 repoRouter.get("/repo/:id", repoController.fetchRepositoryById);
 repoRouter.get("/file/:id", fileController.getFile);
 repoRouter.get("/commits/user/:userId", fileController.listUserCommits);
+repoRouter.get("/commits/recent", fileController.listRecentCommits);
 
 // Writes require a valid JWT
 repoRouter.post("/repo/create", authMiddleware, repoController.createRepository);

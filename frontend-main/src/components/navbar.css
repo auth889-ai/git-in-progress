@@ -102,11 +102,11 @@
 }
 .dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #3f8f68; }
 .dock-item.active {
-  background: var(--gradient-primary);
+  background: #0f1711;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(63, 143, 104, 0.35);
+  box-shadow: 0 4px 12px rgba(15, 23, 17, 0.3);
 }
-.dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5)); }
+.dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(124, 199, 155, 0.8)); }
 .dock-icon { font-size: 16px; }
 body { padding-bottom: 90px; }
 
@@ -123,5 +123,5 @@ body { padding-bottom: 90px; }
   border-radius: 999px; padding: 7px 18px;
 }
 .gh-navbar .btn:hover { border-color: #b9d2c2; background: #f7fbf8; }
-.gh-navbar .btn-primary { background: var(--gradient-primary); color: #ffffff; border: none; box-shadow: 0 2px 8px rgba(63, 143, 104, 0.35); }
-.gh-navbar .btn-primary:hover { background: linear-gradient(135deg, #3f8f68, #63ab7f); }
+.gh-navbar .btn-primary { background: #0f1711; color: #ffffff; border: none; box-shadow: 0 2px 8px rgba(15, 23, 17, 0.3); }
+.gh-navbar .btn-primary:hover { background: #24352a; }
