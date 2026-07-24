@@ -8,6 +8,20 @@ const RepoGraph = ({ repoId }) => {
   const [graph, setGraph] = useState(null);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
+  const [schema, setSchema] = useState("");
+  const [seed, setSeed] = useState(null);
+  const [seedLoading, setSeedLoading] = useState(false);
+  const [seedErr, setSeedErr] = useState("");
+
+  const generateSeed = () => {
+    setSeedLoading(true);
+    setSeedErr("");
+    axios
+      .post(`${API_URL}/repo/${repoId}/seed`, { schema: schema || undefined, rows: 6 })
+      .then((res) => setSeed(res.data))
+      .catch((e) => setSeedErr(e.response?.data?.error || "Seed generation failed."))
+      .finally(() => setSeedLoading(false));
+  };
 
   useEffect(() => {
     axios
@@ -36,16 +50,56 @@ const RepoGraph = ({ repoId }) => {
     }
   }
 
+  const seedPanel = (
+    <div className="card" style={{ marginTop: 16 }}>
+      <h3>🧪 Data Smith — generate seed data</h3>
+      <p className="text-muted" style={{ fontSize: 13, marginBottom: 10 }}>
+        Reads your committed <code>.sql</code> files (or paste a schema below) and
+        generates realistic <code>INSERT</code> rows from the column names — dynamically,
+        per your actual schema.
+      </p>
+      <textarea
+        className="form-textarea"
+        placeholder="Optional: paste a CREATE TABLE schema here…"
+        value={schema}
+        onChange={(e) => setSchema(e.target.value)}
+        style={{ minHeight: 90, fontFamily: "monospace", fontSize: 12 }}
+      />
+      <button
+        className="btn btn-primary"
+        onClick={generateSeed}
+        disabled={seedLoading}
+        style={{ marginTop: 10 }}
+      >
+        {seedLoading ? "Generating…" : "Generate seed data"}
+      </button>
+      {seedErr && <div className="flash-error" style={{ marginTop: 10 }}>{seedErr}</div>}
+      {seed?.sql && (
+        <div style={{ marginTop: 12 }}>
+          <p className="text-muted" style={{ fontSize: 12 }}>
+            {seed.tables?.length} table(s) · via {seed.provider}
+          </p>
+          <pre className="diff-view" style={{ maxHeight: 320, overflow: "auto" }}>
+            {seed.sql}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+
   if (error) return <div className="flash-error">{error}</div>;
   if (!graph) return <p className="spinner-note">Parsing dependencies…</p>;
 
   if (graph.nodeCount === 0)
     return (
-      <div className="card">
-        <p className="text-muted">
-          No JS/TS files with imports found. Upload code files with{" "}
-          <code>import</code>/<code>require</code> statements to see the graph.
-        </p>
+      <div className="repo-section">
+        <div className="card">
+          <p className="text-muted">
+            No JS/TS files with imports found. Upload code files with{" "}
+            <code>import</code>/<code>require</code> statements to see the graph.
+          </p>
+        </div>
+        {seedPanel}
       </div>
     );
 
@@ -157,6 +211,8 @@ const RepoGraph = ({ repoId }) => {
           </ul>
         )}
       </div>
+
+      {seedPanel}
     </div>
   );
 };

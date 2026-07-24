@@ -7,6 +7,7 @@ const { reviewDiff, onboardingBriefing } = require("../services/aiReviewer");
 const { computeFullRisk, repoMemoryNotes, scanSecrets } = require("../services/riskEngine");
 const { buildGraph, rippleImpact, detectCycles } = require("../services/depGraph");
 const { commitCarbon, repoCarbon } = require("../services/carbon");
+const { generateSeedAI } = require("../services/dataSmith");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
 const MAX_PATCH_CHARS = 100 * 1024;
@@ -595,10 +596,36 @@ async function getRepoGraph(req, res) {
   }
 }
 
+// POST /repo/:id/seed — Data Smith: read the repo's .sql files and generate
+// realistic seed data dynamically (AI-powered, deterministic fallback).
+async function generateRepoSeed(req, res) {
+  const { id } = req.params;
+  try {
+    const files = await File.find({ repository: id }).select("path content storage encoding");
+    const sqlFiles = files.filter(
+      (f) => /\.sql$/i.test(f.path) && f.storage !== "b2" && f.encoding !== "base64" && f.content
+    );
+    // also accept schema pasted in the request body
+    const schemaSql = (req.body && req.body.schema) ||
+      sqlFiles.map((f) => f.content).join("\n\n");
+    if (!schemaSql || !/CREATE\s+TABLE/i.test(schemaSql)) {
+      return res.status(400).json({
+        error: "No CREATE TABLE found. Commit a .sql schema file, or paste a schema.",
+      });
+    }
+    const result = await generateSeedAI(schemaSql, req.body?.rows || 6);
+    res.json(result);
+  } catch (err) {
+    console.error("Error generating seed : ", err.message);
+    res.status(502).json({ error: `Seed generation failed: ${err.message}` });
+  }
+}
+
 module.exports = {
   uploadFiles,
   repoOnboarding,
   getRepoGraph,
+  generateRepoSeed,
   reviewCommit,
   revertCommit,
   getRepoHealth,

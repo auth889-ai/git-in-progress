@@ -17,8 +17,11 @@ reproduced below. Local reference clones live in `../winner-reference/`.
 
 - Repo: https://gitlab.com/gitlab-ai-hackathon/participants/34562572
 - License: MIT — Copyright (c) 2026-present GitLab Inc.
-- Ideas adopted here: **per-commit rollback plans** and **one-click revert
-  with conflict detection** (reverse-diff based undo).
+- Ideas adopted here: **per-commit rollback plans**, **one-click revert
+  with conflict detection** (reverse-diff based undo), the **SQL migration
+  auditor** penalty model, and **Data Smith** — AI-powered realistic seed-data
+  generation from a schema, ported from their data_smith.yml agent
+  (LLM-driven, deterministic fallback). See `backend-main/services/dataSmith.js`.
 
 ## RedAgent (Most Impactful)
 

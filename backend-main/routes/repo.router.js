@@ -18,6 +18,7 @@ repoRouter.get("/repo/:id/commits", fileController.listCommits);
 repoRouter.get("/repo/:id/health", fileController.getRepoHealth);
 repoRouter.get("/repo/:id/onboarding", fileController.repoOnboarding);
 repoRouter.get("/repo/:id/graph", fileController.getRepoGraph);
+repoRouter.post("/repo/:id/seed", authMiddleware, fileController.generateRepoSeed);
 repoRouter.get("/repo/:id", repoController.fetchRepositoryById);
 repoRouter.get("/file/:id", fileController.getFile);
 repoRouter.get("/commits/user/:userId", fileController.listUserCommits);
