@@ -507,3 +507,24 @@
 .ai-review-card li {
   margin-bottom: 2px;
 }
+
+/* ---- GitHub-style file page ---- */
+.file-page-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.file-breadcrumb {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.file-breadcrumb .repo-owner {
+  color: var(--color-accent);
+}
+
+.file-page-bar .file-meta {
+  margin-left: auto;
+}

@@ -582,7 +582,36 @@ const RepoDetail = () => {
           <p className="branch-notice">{branchNotice}</p>
         )}
 
-        {activeTab === "code" && (
+        {activeTab === "code" && openFile && (
+          <div className="repo-section">
+            <div className="file-page-bar">
+              <button className="btn" onClick={() => setOpenFile(null)}>
+                ← Back to files
+              </button>
+              <span className="file-breadcrumb">
+                <span className="repo-owner">{repo.name}</span>
+                {" / "}
+                <b>{openFile.path}</b>
+              </span>
+              <span className="file-meta">
+                {(openFile.content || "").split("\n").length} lines ·{" "}
+                {((openFile.size || (openFile.content || "").length) / 1024).toFixed(1)} KB
+              </span>
+            </div>
+            <div className="code-viewer card">
+              <SyntaxHighlighter
+                language={languageFor(openFile.path)}
+                style={oneLight}
+                showLineNumbers
+                customStyle={{ margin: 0, fontSize: 13.5, maxHeight: "72vh" }}
+              >
+                {openFile.content || "(empty file)"}
+              </SyntaxHighlighter>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "code" && !openFile && (
           <>
             <div className="repo-section">
               {files.length === 0 ? (
@@ -622,27 +651,6 @@ const RepoDetail = () => {
                 </div>
               )}
             </div>
-
-            {openFile && (
-              <div className="repo-section">
-                <div className="code-viewer card">
-                  <div className="code-viewer-header">
-                    <b>{openFile.path}</b>
-                    <button className="btn" onClick={() => setOpenFile(null)}>
-                      Close
-                    </button>
-                  </div>
-                  <SyntaxHighlighter
-                    language={languageFor(openFile.path)}
-                    style={oneLight}
-                    showLineNumbers
-                    customStyle={{ margin: 0, maxHeight: 480, fontSize: 13 }}
-                  >
-                    {openFile.content || "(empty file)"}
-                  </SyntaxHighlighter>
-                </div>
-              </div>
-            )}
 
             {isOwner && (
               <div className="repo-section">
