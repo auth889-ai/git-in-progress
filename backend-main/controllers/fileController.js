@@ -9,6 +9,34 @@ const MAX_PATCH_CHARS = 100 * 1024;
 const MAX_FILE_SIZE_B2 = 25 * 1024 * 1024; // 25 MB when Backblaze B2 is configured
 const DB_INLINE_LIMIT = 2 * 1024 * 1024;   // 2 MB stored inline in MongoDB otherwise
 
+// Launch-Control-style deterministic risk engine: weighted rules, no AI
+function computePolicyRisk(changes, message) {
+  let score = 0;
+  const reasons = [];
+  const add = (pts, why) => { score += pts; reasons.push(`+${pts} ${why}`); };
+
+  const totalDel = changes.reduce((a, c) => a + (c.deletions || 0), 0);
+  const totalAdd = changes.reduce((a, c) => a + (c.additions || 0), 0);
+  const deleted = changes.filter((c) => c.action === "deleted");
+  const sensitive = changes.filter((c) =>
+    /(^|\/)(\.env|secrets?|credentials?|id_rsa|\.pem|password)/i.test(c.path)
+  );
+  const configTouched = changes.filter((c) =>
+    /package\.json|dockerfile|\.yml$|\.yaml$|nginx|\.config\./i.test(c.path)
+  );
+
+  if (sensitive.length) add(50, `touches sensitive file(s): ${sensitive.map(c=>c.path).join(", ")}`);
+  if (deleted.length) add(15 * Math.min(deleted.length, 3), `${deleted.length} file(s) deleted — irreversible`);
+  if (totalDel > 100) add(20, `${totalDel} lines removed`);
+  if (totalAdd > 800) add(10, `very large change (+${totalAdd} lines)`);
+  if (/hotfix|urgent|quick.?fix|temp|hack/i.test(message || "")) add(10, "risky keyword in commit message");
+  if (changes.length > 20) add(10, `${changes.length} files in one commit`);
+
+  const verdict = score >= 60 ? "BLOCK" : score >= 25 ? "REVIEW" : "GO";
+  if (!reasons.length) reasons.push("no risk signals detected");
+  return { score, verdict, reasons };
+}
+
 function b2FileKey(repoId, branch, path) {
   return `files/${repoId}/${branch}/${path}`;
 }
@@ -121,6 +149,7 @@ async function uploadFiles(req, res) {
       branch,
       message: message?.trim() || `Add ${changes.length} file(s)`,
       changes,
+      policyRisk: computePolicyRisk(changes, message),
     });
 
     res.status(201).json({ message: "Files uploaded!", commit });
@@ -203,6 +232,10 @@ async function deleteFile(req, res) {
       branch: file.branch || "main",
       message: `Delete ${file.path}`,
       changes: [{ path: file.path, action: "deleted", ...diffInfo }],
+      policyRisk: computePolicyRisk(
+        [{ path: file.path, action: "deleted", ...diffInfo }],
+        `Delete ${file.path}`
+      ),
     });
 
     res.json({ message: "File deleted!" });

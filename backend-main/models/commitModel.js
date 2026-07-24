@@ -39,6 +39,12 @@ const CommitSchema = new Schema(
         deletions: Number,
       },
     ],
+    // Deterministic policy risk (Launch-Control style, no AI needed)
+    policyRisk: {
+      score: Number,
+      verdict: { type: String, enum: ["GO", "REVIEW", "BLOCK"] },
+      reasons: [String],
+    },
     // Cached AI review of this commit's diff
     aiReview: {
       summary: String,

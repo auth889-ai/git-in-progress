@@ -905,7 +905,19 @@ const RepoDetail = () => {
                       <div className="issue-row">
                         <CommitIcon />
                         <div className="issue-row-body">
-                          <div className="issue-row-title">{commit.message}</div>
+                          <div className="issue-row-title">
+                            {commit.message}
+                            {commit.policyRisk?.verdict && (
+                              <span
+                                className={`risk-verdict risk-${commit.policyRisk.verdict.toLowerCase()}`}
+                                title={(commit.policyRisk.reasons || []).join("\n")}
+                              >
+                                {commit.policyRisk.verdict === "GO" ? "✅ GO" :
+                                 commit.policyRisk.verdict === "REVIEW" ? "⚠️ REVIEW" : "🚫 BLOCK"}
+                                {" "}{commit.policyRisk.score}
+                              </span>
+                            )}
+                          </div>
                           <div className="issue-row-desc">
                             {commit.changes
                               ?.map((c) => `${c.action}: ${c.path}`)
