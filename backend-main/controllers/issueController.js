@@ -1,5 +1,7 @@
 const Issue = require("../models/issueModel");
 const Repository = require("../models/repoModel");
+const { preMortem } = require("../services/aiReviewer");
+const { repoMemoryNotes } = require("../services/riskEngine");
 
 async function createIssue(req, res) {
   const { title, description } = req.body;
@@ -102,10 +104,36 @@ async function getIssueById(req, res) {
   }
 }
 
+// POST /issue/:id/premortem — LORE-style failure prediction before code exists.
+// Grounds the AI in this repo's actual risky history; cached on the issue.
+async function preMortemIssue(req, res) {
+  const { id } = req.params;
+  try {
+    const issue = await Issue.findById(id);
+    if (!issue) {
+      return res.status(404).json({ error: "Issue not found!" });
+    }
+    if (issue.preMortem?.spec) {
+      return res.json(issue.preMortem);
+    }
+
+    const memoryNotes = await repoMemoryNotes(issue.repository);
+    const result = await preMortem(issue.title, issue.description, memoryNotes);
+    issue.preMortem = { ...result, createdAt: new Date() };
+    await issue.save();
+
+    res.json(issue.preMortem);
+  } catch (err) {
+    console.error("Error generating pre-mortem : ", err.message);
+    res.status(502).json({ error: `Pre-mortem failed: ${err.message}` });
+  }
+}
+
 module.exports = {
   createIssue,
   updateIssueById,
   deleteIssueById,
   getAllIssues,
   getIssueById,
+  preMortemIssue,
 };

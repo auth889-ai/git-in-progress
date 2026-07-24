@@ -10,6 +10,7 @@ issueRouter.get("/issue/:id", issueController.getIssueById);
 
 // Writes require a valid JWT
 issueRouter.post("/issue/create/:id", authMiddleware, issueController.createIssue);
+issueRouter.post("/issue/:id/premortem", authMiddleware, issueController.preMortemIssue);
 issueRouter.put("/issue/update/:id", authMiddleware, issueController.updateIssueById);
 issueRouter.delete("/issue/delete/:id", authMiddleware, issueController.deleteIssueById);
 

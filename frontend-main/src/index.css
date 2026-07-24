@@ -19,7 +19,7 @@
   --color-success: #10b981;
   --color-danger: #dc2626;
   --color-danger-btn: #ef4444;
-  --gradient-primary: linear-gradient(135deg, #4d9b72 0%, #79b98f 100%);
+  --gradient-primary: linear-gradient(135deg, #3f8f68 0%, #2a9d8f 100%);
   --shadow-card: 0 2px 6px rgba(77, 155, 114, 0.06), 0 10px 30px rgba(77, 155, 114, 0.12);
   --shadow-card-hover: 0 4px 10px rgba(77, 155, 114, 0.08), 0 16px 40px rgba(77, 155, 114, 0.16);
   --radius: 18px;
@@ -50,7 +50,8 @@ body {
       rgba(121, 185, 143, 0.16) 0,
       transparent 55%
     ),
-    radial-gradient(at 100% 0%, rgba(253, 243, 227, 0.5) 0, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(232, 200, 119, 0.16) 0, transparent 55%),
+    radial-gradient(at 100% 100%, rgba(103, 183, 220, 0.10) 0, transparent 55%),
     radial-gradient(at 50% 100%, rgba(226, 242, 233, 0.6) 0, transparent 55%);
   background-repeat: no-repeat;
 }
@@ -118,7 +119,7 @@ p {
   box-shadow: 0 2px 8px rgba(63, 143, 104, 0.35);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #3f8f68 0%, #63ab7f 100%);
+  background: linear-gradient(135deg, #35795a 0%, #21857b 100%);
   box-shadow: 0 4px 14px rgba(63, 143, 104, 0.45);
 }
 
@@ -303,3 +304,25 @@ h3 { font-size: 16px; }
 /* research pass: consistent page header + 8px spacing scale */
 .repo-page-header h1, .dashboard-main h2, .profile-section-title { margin-bottom: 8px; }
 section, .repo-section { scroll-margin-top: 80px; }
+
+
+/* ---- premium accents: tri-hue underline on section titles ---- */
+.profile-section-title::after,
+.dashboard-main h2::after,
+.section-heading::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 4px;
+  margin-top: 7px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #3f8f68, #2a9d8f 55%, #e8c877);
+}
+.section-heading::after { margin-left: auto; margin-right: auto; }
+
+/* link color: deep teal-green, hover teal */
+a { color: #2f7050; }
+a:hover { color: #21857b; }
+
+/* gradient text utility for headline numbers */
+.stat-card .stat-num { background: none; }

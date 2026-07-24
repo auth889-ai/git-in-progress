@@ -1,104 +1,14 @@
 const { createTwoFilesPatch, applyPatch } = require("diff");
-const fs = require("fs");
-const path = require("path");
 const File = require("../models/fileModel");
 const Commit = require("../models/commitModel");
 const Repository = require("../models/repoModel");
 const { reviewDiff } = require("../services/aiReviewer");
+const { computeFullRisk, repoMemoryNotes } = require("../services/riskEngine");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
 const MAX_PATCH_CHARS = 100 * 1024;
 const MAX_FILE_SIZE_B2 = 25 * 1024 * 1024; // 25 MB when Backblaze B2 is configured
 const DB_INLINE_LIMIT = 2 * 1024 * 1024;   // 2 MB stored inline in MongoDB otherwise
-
-// Policy-as-code (Launch-Control style): weights and thresholds live in
-// config/risk-policy.json — tune release policy with zero code changes.
-const POLICY_PATH = path.join(__dirname, "..", "config", "risk-policy.json");
-const DEFAULT_POLICY = {
-  weights: { sensitiveFile: 50, fileDeleted: 15, maxDeletedCounted: 3, massDeletion: 20, veryLargeChange: 10, riskyKeyword: 10, tooManyFiles: 10, repeatedMistake: 15 },
-  thresholds: { goMax: 24, reviewMax: 59, massDeletionLines: 100, veryLargeChangeLines: 800, tooManyFilesCount: 20 },
-  patterns: { sensitive: "(^|/)(\\.env|secrets?|credentials?|id_rsa|\\.pem|password)", config: "package\\.json|dockerfile|\\.yml$|\\.yaml$|nginx|\\.config\\.", riskyMessage: "hotfix|urgent|quick.?fix|temp|hack" },
-};
-function loadRiskPolicy() {
-  try {
-    const raw = JSON.parse(fs.readFileSync(POLICY_PATH, "utf8"));
-    return {
-      weights: { ...DEFAULT_POLICY.weights, ...raw.weights },
-      thresholds: { ...DEFAULT_POLICY.thresholds, ...raw.thresholds },
-      patterns: { ...DEFAULT_POLICY.patterns, ...raw.patterns },
-    };
-  } catch {
-    return DEFAULT_POLICY;
-  }
-}
-
-// Deterministic risk engine: weighted rules from the policy file, no AI
-function computePolicyRisk(changes, message) {
-  const { weights: W, thresholds: T, patterns: P } = loadRiskPolicy();
-  let score = 0;
-  const reasons = [];
-  const add = (pts, why) => { score += pts; reasons.push(`+${pts} ${why}`); };
-
-  const totalDel = changes.reduce((a, c) => a + (c.deletions || 0), 0);
-  const totalAdd = changes.reduce((a, c) => a + (c.additions || 0), 0);
-  const deleted = changes.filter((c) => c.action === "deleted");
-  const sensitive = changes.filter((c) => new RegExp(P.sensitive, "i").test(c.path));
-
-  if (sensitive.length) add(W.sensitiveFile, `touches sensitive file(s): ${sensitive.map(c=>c.path).join(", ")}`);
-  if (deleted.length) add(W.fileDeleted * Math.min(deleted.length, W.maxDeletedCounted), `${deleted.length} file(s) deleted — irreversible`);
-  if (totalDel > T.massDeletionLines) add(W.massDeletion, `${totalDel} lines removed`);
-  if (totalAdd > T.veryLargeChangeLines) add(W.veryLargeChange, `very large change (+${totalAdd} lines)`);
-  if (new RegExp(P.riskyMessage, "i").test(message || "")) add(W.riskyKeyword, "risky keyword in commit message");
-  if (changes.length > T.tooManyFilesCount) add(W.tooManyFiles, `${changes.length} files in one commit`);
-
-  const verdict = score > T.reviewMax ? "BLOCK" : score > T.goMax ? "REVIEW" : "GO";
-  if (!reasons.length) reasons.push("no risk signals detected");
-  return { score, verdict, reasons, rollback: buildRollbackPlan(changes) };
-}
-
-// Time-Traveler style: every commit ships with its exact undo plan
-function buildRollbackPlan(changes) {
-  return changes.map((c) => {
-    if (c.action === "added") return `delete ${c.path} (it did not exist before this commit)`;
-    if (c.action === "deleted")
-      return c.reversePatch
-        ? `restore ${c.path} from the stored reverse diff`
-        : `re-create ${c.path} manually (no reverse diff stored)`;
-    return c.reversePatch
-      ? `apply the stored reverse diff to ${c.path}`
-      : `revert ${c.path} manually (no reverse diff stored)`;
-  });
-}
-
-// LORE-style institutional memory: warn when this commit touches files that
-// caused a REVIEW/BLOCK before — the team should not repeat the mistake.
-async function riskMemoryWarnings(repoId, changes) {
-  const paths = changes.map((c) => c.path);
-  if (!paths.length) return [];
-  const past = await Commit.find({
-    repository: repoId,
-    "policyRisk.verdict": { $in: ["REVIEW", "BLOCK"] },
-    "changes.path": { $in: paths },
-  })
-    .sort({ createdAt: -1 })
-    .limit(10)
-    .select("message createdAt policyRisk.verdict changes.path");
-
-  const warnings = [];
-  const seen = new Set();
-  for (const old of past) {
-    const overlap = old.changes.filter((c) => paths.includes(c.path)).map((c) => c.path);
-    for (const p of overlap) {
-      if (seen.has(p)) continue;
-      seen.add(p);
-      warnings.push(
-        `${p} was part of a ${old.policyRisk.verdict} commit on ${old.createdAt.toISOString().slice(0, 10)} ("${old.message.slice(0, 60)}") — check that history before merging`
-      );
-      if (warnings.length >= 5) return warnings;
-    }
-  }
-  return warnings;
-}
 
 function b2FileKey(repoId, branch, path) {
   return `files/${repoId}/${branch}/${path}`;
@@ -121,24 +31,6 @@ function makePatch(path, oldContent, newContent) {
     additions,
     deletions,
   };
-}
-
-// Full risk = deterministic rules + institutional memory (may raise the verdict)
-async function computeFullRisk(repoId, changes, message) {
-  const risk = computePolicyRisk(changes, message);
-  try {
-    const memory = await riskMemoryWarnings(repoId, changes);
-    if (memory.length) {
-      const { weights: W, thresholds: T } = loadRiskPolicy();
-      risk.memory = memory;
-      risk.score += W.repeatedMistake;
-      risk.reasons.push(`+${W.repeatedMistake} touches file(s) with a risky history (see memory)`);
-      risk.verdict = risk.score > T.reviewMax ? "BLOCK" : risk.score > T.goMax ? "REVIEW" : "GO";
-    }
-  } catch (err) {
-    console.error("risk memory lookup failed:", err.message);
-  }
-  return risk;
 }
 
 const MAX_FILES_PER_UPLOAD = 100;
@@ -380,7 +272,9 @@ async function reviewCommit(req, res) {
       .map((c) => c.patch || `${c.action}: ${c.path}`)
       .join("\n");
 
-    const review = await reviewDiff(diffText, commit.message);
+    // Ground the review in this repo's risky history (LORE-style memory layer)
+    const memoryNotes = await repoMemoryNotes(commit.repository).catch(() => []);
+    const review = await reviewDiff(diffText, commit.message, memoryNotes);
     commit.aiReview = { ...review, createdAt: new Date() };
     await commit.save();
 
@@ -515,10 +409,83 @@ async function revertCommit(req, res) {
   }
 }
 
+// GET /repo/:id/health — LORE-style health audit, fully deterministic (no AI).
+// One call returns everything the Health tab renders.
+async function getRepoHealth(req, res) {
+  const { id } = req.params;
+  try {
+    const commits = await Commit.find({ repository: id })
+      .select("createdAt branch policyRisk.verdict policyRisk.score changes.path changes.additions changes.deletions")
+      .sort({ createdAt: -1 })
+      .limit(500);
+    const files = await File.find({ repository: id }).select("path size branch");
+
+    const verdicts = { GO: 0, REVIEW: 0, BLOCK: 0 };
+    let additions = 0, deletions = 0, scoreSum = 0, scored = 0;
+    const riskyFiles = {};
+    const weekly = {}; // ISO week start date -> commit count
+
+    for (const c of commits) {
+      const v = c.policyRisk?.verdict;
+      if (v) { verdicts[v] = (verdicts[v] || 0) + 1; scoreSum += c.policyRisk.score || 0; scored++; }
+      for (const ch of c.changes || []) {
+        additions += ch.additions || 0;
+        deletions += ch.deletions || 0;
+        if (v && v !== "GO") riskyFiles[ch.path] = (riskyFiles[ch.path] || 0) + 1;
+      }
+      const d = new Date(c.createdAt);
+      d.setDate(d.getDate() - d.getDay()); // week start (Sunday)
+      const key = d.toISOString().slice(0, 10);
+      weekly[key] = (weekly[key] || 0) + 1;
+    }
+
+    const languages = {};
+    for (const f of files) {
+      const ext = (f.path.split(".").pop() || "").toLowerCase() || "other";
+      languages[ext] = (languages[ext] || 0) + (f.size || 0);
+    }
+
+    const topRisky = Object.entries(riskyFiles)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([path, count]) => ({ path, count }));
+    const langTotal = Object.values(languages).reduce((a, b) => a + b, 0) || 1;
+    const topLanguages = Object.entries(languages)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([ext, bytes]) => ({ ext, bytes, pct: Math.round((bytes / langTotal) * 100) }));
+
+    // Health grade: penalize BLOCK-heavy history, reward clean gates
+    const total = verdicts.GO + verdicts.REVIEW + verdicts.BLOCK;
+    const blockRate = total ? verdicts.BLOCK / total : 0;
+    const reviewRate = total ? verdicts.REVIEW / total : 0;
+    const health = Math.max(0, Math.round(100 - blockRate * 60 - reviewRate * 25));
+    const grade = health >= 90 ? "A" : health >= 75 ? "B" : health >= 60 ? "C" : health >= 40 ? "D" : "E";
+
+    res.json({
+      totalCommits: commits.length,
+      fileCount: files.length,
+      verdicts,
+      avgRiskScore: scored ? Math.round(scoreSum / scored) : 0,
+      additions,
+      deletions,
+      topRisky,
+      topLanguages,
+      weekly,
+      health,
+      grade,
+    });
+  } catch (err) {
+    console.error("Error computing repo health : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 module.exports = {
   uploadFiles,
   reviewCommit,
   revertCommit,
+  getRepoHealth,
   listFiles,
   getFile,
   deleteFile,

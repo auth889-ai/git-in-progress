@@ -15,6 +15,7 @@ repoRouter.get("/repo/star/:id/status", repoController.getStarStatus);
 repoRouter.get("/repo/:id/files", fileController.listFiles);
 repoRouter.get("/repo/:id/branches", branchController.listBranches);
 repoRouter.get("/repo/:id/commits", fileController.listCommits);
+repoRouter.get("/repo/:id/health", fileController.getRepoHealth);
 repoRouter.get("/repo/:id", repoController.fetchRepositoryById);
 repoRouter.get("/file/:id", fileController.getFile);
 repoRouter.get("/commits/user/:userId", fileController.listUserCommits);

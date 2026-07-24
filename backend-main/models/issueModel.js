@@ -21,6 +21,14 @@ const IssueSchema = new Schema(
       ref: "Repository",
       required: true,
     },
+    // Cached LORE-style pre-mortem: failure prediction before code exists
+    preMortem: {
+      warnings: [String],
+      questions: [String],
+      spec: String,
+      provider: String,
+      createdAt: Date,
+    },
   },
   { timestamps: true }
 );

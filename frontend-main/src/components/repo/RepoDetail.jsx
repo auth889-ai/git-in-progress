@@ -13,6 +13,8 @@ import { API_URL } from "../../config";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CommitHistory from "./CommitHistory";
+import IssueList from "./IssueList";
+import RepoHealth from "./RepoHealth";
 import "./repo.css";
 
 const EXT_LANG = {
@@ -95,8 +97,6 @@ const RepoDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [issueTitle, setIssueTitle] = useState("");
-  const [issueDesc, setIssueDesc] = useState("");
   const [submittingIssue, setSubmittingIssue] = useState(false);
 
   const [commitMessage, setCommitMessage] = useState("");
@@ -349,20 +349,15 @@ const RepoDetail = () => {
     }
   };
 
-  const handleCreateIssue = async (e) => {
-    e.preventDefault();
-    if (!issueTitle.trim() || !issueDesc.trim()) return;
+  const handleCreateIssue = async (title, description) => {
     try {
       setSubmittingIssue(true);
-      await axios.post(`${API_URL}/issue/create/${id}`, {
-        title: issueTitle.trim(),
-        description: issueDesc.trim(),
-      });
-      setIssueTitle("");
-      setIssueDesc("");
+      await axios.post(`${API_URL}/issue/create/${id}`, { title, description });
       fetchIssues();
+      return true;
     } catch (err) {
       console.error("Error creating issue: ", err);
+      return false;
     } finally {
       setSubmittingIssue(false);
     }
@@ -521,6 +516,12 @@ const RepoDetail = () => {
               onClick={() => setActiveTab("issues")}
             >
               <IssueOpenIcon /> Issues ({openIssues.length})
+            </button>
+            <button
+              className={`repo-tab ${activeTab === "health" ? "active" : ""}`}
+              onClick={() => setActiveTab("health")}
+            >
+              💚 Health
             </button>
             {isOwner && (
               <button
@@ -850,94 +851,16 @@ const RepoDetail = () => {
         )}
 
         {activeTab === "issues" && (
-          <>
-            <div className="repo-section">
-              {issues.length === 0 ? (
-                <div className="card">
-                  <p className="text-muted">
-                    No issues yet. Open the first one below.
-                  </p>
-                </div>
-              ) : (
-                <div className="issue-list">
-                  {[...openIssues, ...closedIssues].map((issue) => (
-                    <div key={issue._id} className="issue-row">
-                      {issue.status === "open" ? (
-                        <IssueOpenIcon />
-                      ) : (
-                        <IssueClosedIcon />
-                      )}
-                      <div className="issue-row-body">
-                        <div className="issue-row-title">{issue.title}</div>
-                        <div className="issue-row-desc">
-                          {issue.description}
-                        </div>
-                        <div className="issue-row-meta">
-                          {issue.status === "open" ? "Opened" : "Closed"}{" "}
-                          {timeAgo(issue.updatedAt || issue.createdAt)}
-                        </div>
-                      </div>
-                      <div className="issue-row-actions">
-                        <button
-                          className="btn"
-                          onClick={() => handleToggleIssue(issue)}
-                        >
-                          {issue.status === "open" ? "Close" : "Reopen"}
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => handleDeleteIssue(issue)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="repo-section">
-              <h3>New issue</h3>
-              <form className="card" onSubmit={handleCreateIssue}>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="issue-title">
-                    Title
-                  </label>
-                  <input
-                    id="issue-title"
-                    className="form-input"
-                    type="text"
-                    value={issueTitle}
-                    onChange={(e) => setIssueTitle(e.target.value)}
-                    placeholder="Something isn't working…"
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label" htmlFor="issue-desc">
-                    Description
-                  </label>
-                  <textarea
-                    id="issue-desc"
-                    className="form-textarea"
-                    value={issueDesc}
-                    onChange={(e) => setIssueDesc(e.target.value)}
-                    placeholder="Steps to reproduce, expected behavior…"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={
-                    submittingIssue || !issueTitle.trim() || !issueDesc.trim()
-                  }
-                >
-                  {submittingIssue ? "Submitting…" : "Submit new issue"}
-                </button>
-              </form>
-            </div>
-          </>
+          <IssueList
+            issues={issues}
+            onToggle={handleToggleIssue}
+            onDelete={handleDeleteIssue}
+            onCreate={handleCreateIssue}
+            submitting={submittingIssue}
+          />
         )}
+
+        {activeTab === "health" && <RepoHealth repoId={id} />}
 
         {activeTab === "settings" && isOwner && (
           <div className="repo-section">
