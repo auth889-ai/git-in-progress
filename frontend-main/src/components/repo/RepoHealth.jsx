@@ -22,6 +22,9 @@ const Bar = ({ label, value, max, color }) => (
 const RepoHealth = ({ repoId }) => {
   const [health, setHealth] = useState(null);
   const [error, setError] = useState("");
+  const [briefing, setBriefing] = useState(null);
+  const [briefingLoading, setBriefingLoading] = useState(false);
+  const [briefingErr, setBriefingErr] = useState("");
 
   useEffect(() => {
     axios
@@ -29,6 +32,16 @@ const RepoHealth = ({ repoId }) => {
       .then((res) => setHealth(res.data))
       .catch(() => setError("Could not load repo health."));
   }, [repoId]);
+
+  const runOnboarding = () => {
+    setBriefingLoading(true);
+    setBriefingErr("");
+    axios
+      .get(`${API_URL}/repo/${repoId}/onboarding`)
+      .then((res) => setBriefing(res.data))
+      .catch((e) => setBriefingErr(e.response?.data?.error || "Onboarding failed."))
+      .finally(() => setBriefingLoading(false));
+  };
 
   if (error) return <div className="flash-error">{error}</div>;
   if (!health) return <p className="spinner-note">Auditing repository…</p>;
@@ -101,6 +114,21 @@ const RepoHealth = ({ repoId }) => {
         </div>
 
         <div className="card">
+          <h3>🔐 Security inventory</h3>
+          {(!health.secrets || health.secrets.length === 0) ? (
+            <p className="text-muted">No hardcoded secrets detected in stored text files. 🎉</p>
+          ) : (
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {health.secrets.map((s, i) => (
+                <li key={i} style={{ color: "#cf222e" }}>
+                  <b>{s.kind}</b> in {s.path}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="card">
           <h3>Commit activity (12 weeks)</h3>
           {weeks.length === 0 ? (
             <p className="text-muted">No commits yet.</p>
@@ -117,6 +145,27 @@ const RepoHealth = ({ repoId }) => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <div>
+            <h3>👋 New-contributor briefing</h3>
+            <p className="text-muted" style={{ fontSize: 13 }}>
+              AI-generated onboarding: what this repo is, security rules, architecture, and past incidents.
+            </p>
+          </div>
+          <button className="btn btn-primary" onClick={runOnboarding} disabled={briefingLoading}>
+            {briefingLoading ? "Generating…" : briefing ? "Regenerate" : "Generate briefing"}
+          </button>
+        </div>
+        {briefingErr && <div className="flash-error" style={{ marginTop: 12 }}>{briefingErr}</div>}
+        {briefing?.briefing && (
+          <div style={{ marginTop: 14 }}>
+            <p style={{ whiteSpace: "pre-wrap" }}>{briefing.briefing}</p>
+            <p className="text-muted" style={{ fontSize: 12, marginTop: 8 }}>via {briefing.provider}</p>
+          </div>
+        )}
       </div>
     </div>
   );

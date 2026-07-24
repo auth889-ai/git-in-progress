@@ -3,8 +3,8 @@ const File = require("../models/fileModel");
 const Commit = require("../models/commitModel");
 const Repository = require("../models/repoModel");
 const Issue = require("../models/issueModel");
-const { reviewDiff } = require("../services/aiReviewer");
-const { computeFullRisk, repoMemoryNotes } = require("../services/riskEngine");
+const { reviewDiff, onboardingBriefing } = require("../services/aiReviewer");
+const { computeFullRisk, repoMemoryNotes, scanSecrets } = require("../services/riskEngine");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
 const MAX_PATCH_CHARS = 100 * 1024;
@@ -468,7 +468,7 @@ async function getRepoHealth(req, res) {
       .select("createdAt branch policyRisk.verdict policyRisk.score changes.path changes.additions changes.deletions")
       .sort({ createdAt: -1 })
       .limit(500);
-    const files = await File.find({ repository: id }).select("path size branch");
+    const files = await File.find({ repository: id }).select("path size branch content storage encoding");
 
     const verdicts = { GO: 0, REVIEW: 0, BLOCK: 0 };
     let additions = 0, deletions = 0, scoreSum = 0, scored = 0;
@@ -489,6 +489,7 @@ async function getRepoHealth(req, res) {
       weekly[key] = (weekly[key] || 0) + 1;
     }
 
+    const secrets = scanSecrets(files);
     const languages = {};
     for (const f of files) {
       const ext = (f.path.split(".").pop() || "").toLowerCase() || "other";
@@ -524,6 +525,7 @@ async function getRepoHealth(req, res) {
       weekly,
       health,
       grade,
+      secrets,
     });
   } catch (err) {
     console.error("Error computing repo health : ", err.message);
@@ -531,8 +533,42 @@ async function getRepoHealth(req, res) {
   }
 }
 
+// GET /repo/:id/onboarding — LORE-style briefing for a new contributor
+async function repoOnboarding(req, res) {
+  const { id } = req.params;
+  try {
+    const repo = await Repository.findById(id);
+    if (!repo) return res.status(404).json({ error: "Repository not found!" });
+
+    const [files, commits] = await Promise.all([
+      File.find({ repository: id }).select("path size"),
+      Commit.find({ repository: id }).select("message policyRisk.verdict").sort({ createdAt: -1 }).limit(20),
+    ]);
+    const langs = {};
+    for (const f of files) {
+      const ext = (f.path.split(".").pop() || "").toLowerCase();
+      if (ext) langs[ext] = (langs[ext] || 0) + 1;
+    }
+    const memoryNotes = await repoMemoryNotes(id).catch(() => []);
+
+    const briefing = await onboardingBriefing({
+      name: repo.name,
+      description: repo.description,
+      languages: Object.entries(langs).sort((a, b) => b[1] - a[1]).map(([e, n]) => `${e}(${n})`).join(", ") || "none",
+      files: files.slice(0, 30).map((f) => f.path).join(", ") || "none",
+      commits: commits.slice(0, 12).map((c) => c.message).join(" | ") || "none",
+      memory: memoryNotes.join(" | "),
+    });
+    res.json(briefing);
+  } catch (err) {
+    console.error("Error generating onboarding : ", err.message);
+    res.status(502).json({ error: `Onboarding failed: ${err.message}` });
+  }
+}
+
 module.exports = {
   uploadFiles,
+  repoOnboarding,
   reviewCommit,
   revertCommit,
   getRepoHealth,

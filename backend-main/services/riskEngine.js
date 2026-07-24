@@ -183,4 +183,27 @@ async function repoMemoryNotes(repoId, limit = 8) {
   );
 }
 
-module.exports = { loadRiskPolicy, computePolicyRisk, computeFullRisk, repoMemoryNotes };
+// Security inventory (LORE health-auditor idea): deterministic secret scan
+// over inline-stored text files. Returns [{ path, kind }].
+const SECRET_PATTERNS = [
+  { kind: "AWS access key", re: /AKIA[0-9A-Z]{16}/ },
+  { kind: "Private key file", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
+  { kind: "OpenRouter/Anthropic key", re: /sk-(or|ant)-[A-Za-z0-9-]{10,}/ },
+  { kind: "GitHub token", re: /gh[pousr]_[A-Za-z0-9]{20,}/ },
+  { kind: "Hardcoded secret", re: /(api[_-]?key|secret|password|token)\s*[:=]\s*['"][^'"\s]{8,}['"]/i },
+];
+
+function scanSecrets(files) {
+  const findings = [];
+  for (const f of files) {
+    if (f.storage === "b2" || f.encoding === "base64") continue;
+    const content = f.content || "";
+    if (!content || content.length > 200 * 1024) continue;
+    for (const p of SECRET_PATTERNS) {
+      if (p.re.test(content)) findings.push({ path: f.path, kind: p.kind });
+    }
+  }
+  return findings.slice(0, 20);
+}
+
+module.exports = { loadRiskPolicy, computePolicyRisk, computeFullRisk, repoMemoryNotes, scanSecrets };

@@ -246,4 +246,76 @@ async function preMortem(title, description, memoryNotes) {
   throw new Error("No AI provider configured. Add ANTHROPIC_API_KEY or OPENROUTER_API_KEY to .env.");
 }
 
-module.exports = { reviewDiff, preMortem };
+// ---- LORE-style onboarding briefing (ported from LORE's ONBOARDING agent
+// prompt in flows/flow.yml — MIT License, Copyright (c) 2026 LORE Contributors) ----
+function buildOnboardingPrompt(ctx) {
+  return (
+    "You are an onboarding agent that generates a comprehensive briefing for a developer " +
+    "who just joined this repository. Voice: welcoming but honest — a new developer should " +
+    "understand every constraint that could bite them. Structure the briefing as:\n" +
+    "1. Project vital signs (what it is, size, activity)\n" +
+    "2. SECURITY first — risky history and non-negotiable rules learned from it\n" +
+    "3. Architecture — what the main files/folders do, grouped sensibly\n" +
+    "4. Top past incidents (REVIEW/BLOCK commits) with the lesson from each\n" +
+    "5. Conventions to follow, and what to do on day one\n" +
+    "Be specific to THIS repository using the data below, not generic advice.\n\n" +
+    `Repository: ${ctx.name} — ${ctx.description || "no description"}\n` +
+    `Languages: ${ctx.languages}\n` +
+    `Files (sample): ${ctx.files}\n` +
+    `Recent commits: ${ctx.commits}\n` +
+    `Risky history: ${ctx.memory || "none recorded"}\n` +
+    `Open issues: ${ctx.issues || "none"}`
+  );
+}
+
+const ONBOARD_SCHEMA = {
+  type: "object",
+  properties: { briefing: { type: "string" } },
+  required: ["briefing"],
+  additionalProperties: false,
+};
+
+async function onboardingBriefing(ctx) {
+  const prompt = buildOnboardingPrompt(ctx);
+  if (process.env.ANTHROPIC_API_KEY) {
+    const Anthropic = require("@anthropic-ai/sdk");
+    const client = new Anthropic();
+    const response = await client.messages.create({
+      model: "claude-opus-4-8",
+      max_tokens: 16000,
+      thinking: { type: "adaptive" },
+      output_config: { format: { type: "json_schema", schema: ONBOARD_SCHEMA } },
+      messages: [{ role: "user", content: prompt }],
+    });
+    const textBlock = response.content.find((b) => b.type === "text");
+    return { ...JSON.parse(textBlock.text), provider: "claude" };
+  }
+  if (process.env.OPENROUTER_API_KEY) {
+    for (const model of OPENROUTER_FREE_MODELS) {
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: "user", content: prompt + '\n\nRespond ONLY with JSON: {"briefing": string}. The briefing is plain text with numbered sections. No markdown fences.' }],
+          }),
+        });
+        if (!res.ok) throw new Error(`OpenRouter ${res.status}`);
+        const data = await res.json();
+        let text = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g, "").trim();
+        const a = text.indexOf("{"); const b = text.lastIndexOf("}");
+        if (a === -1 || b === -1) throw new Error("no JSON");
+        return { ...JSON.parse(text.slice(a, b + 1)), provider: `openrouter/${model.split(":")[0]}` };
+      } catch (err) {
+        console.error(`onboarding ${model} failed:`, err.message);
+      }
+    }
+  }
+  throw new Error("No AI provider configured.");
+}
+
+module.exports = { reviewDiff, preMortem, onboardingBriefing };
