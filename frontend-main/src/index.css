@@ -253,3 +253,17 @@ body .stat-link b, body .file-table-commits-link { color: #e2e8f5; }
 body .stat-link:hover, body .file-table-commits-link:hover { color: #7dd3fc; }
 body .dashboard-repo-item { color: #e2e8f5; }
 body .dashboard-repo-item:hover { color: #7dd3fc; }
+
+/* ---- animations ---- */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card, .repo-section, .dashboard-main, .profile-main section, .file-list, .issue-list {
+  animation: riseIn 0.35s ease both;
+}
+.repo-section:nth-of-type(2) { animation-delay: 0.06s; }
+.repo-section:nth-of-type(3) { animation-delay: 0.12s; }
+body .btn:active { transform: translateY(0) scale(0.98); }
+body .avatar { transition: transform 0.2s ease; }
+body .avatar:hover { transform: scale(1.04) rotate(-2deg); }

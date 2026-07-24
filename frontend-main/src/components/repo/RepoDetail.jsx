@@ -53,7 +53,7 @@ const riskColor = (score) =>
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
-const BINARY_EXTS = [...IMAGE_EXTS, "pdf", "zip", "gz", "tar", "mp3", "mp4", "mov", "woff", "woff2", "ttf", "eot", "exe", "bin"];
+const BINARY_EXTS = [...IMAGE_EXTS, "pdf", "zip", "gz", "tar", "mp3", "mp4", "mov", "woff", "woff2", "ttf", "eot", "exe", "bin", "docx", "doc", "xlsx", "xls", "pptx", "ppt", "key"];
 
 const fileExt = (path) => (path || "").split(".").pop().toLowerCase();
 
@@ -131,6 +131,25 @@ const RepoDetail = () => {
   const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef(null);
   const folderInputRef = useRef(null);
+
+  const handleDownloadFile = () => {
+    if (!openFile) return;
+    let blob;
+    if (openFile.encoding === "base64") {
+      const byteChars = atob(openFile.content || "");
+      const bytes = new Uint8Array(byteChars.length);
+      for (let i = 0; i < byteChars.length; i++) bytes[i] = byteChars.charCodeAt(i);
+      blob = new Blob([bytes]);
+    } else {
+      blob = new Blob([openFile.content || ""]);
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = openFile.path.split("/").pop();
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const currentUserId = localStorage.getItem("userId");
   const isOwner =
@@ -643,6 +662,9 @@ const RepoDetail = () => {
                 {(openFile.content || "").split("\n").length} lines ·{" "}
                 {((openFile.size || (openFile.content || "").length) / 1024).toFixed(1)} KB
               </span>
+              <button className="btn" onClick={handleDownloadFile}>
+                ⬇ Download
+              </button>
             </div>
             <div className="code-viewer card">
               {openFile.encoding === "base64" && isImagePath(openFile.path) ? (
@@ -652,11 +674,24 @@ const RepoDetail = () => {
                     alt={openFile.path}
                   />
                 </div>
-              ) : openFile.encoding === "base64" ? (
-                <p className="spinner-note">
-                  Binary file ({((openFile.size || 0) / 1024).toFixed(1)} KB) — preview not
-                  available.
-                </p>
+              ) : openFile.encoding === "base64" || isBinaryPath(openFile.path) ? (
+                <div className="spinner-note">
+                  <p style={{ fontSize: 32, marginBottom: 8 }}>📦</p>
+                  <p>
+                    <b>{openFile.path.split("/").pop()}</b> is a binary file (
+                    {((openFile.size || (openFile.content || "").length) / 1024).toFixed(1)} KB)
+                    — no text preview.
+                  </p>
+                  <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={handleDownloadFile}>
+                    ⬇ Download file
+                  </button>
+                  {openFile.encoding !== "base64" && (
+                    <p className="text-muted" style={{ marginTop: 10, fontSize: 12 }}>
+                      Uploaded before binary support — if the download is corrupted,
+                      delete and re-upload it.
+                    </p>
+                  )}
+                </div>
               ) : (
                 <SyntaxHighlighter
                   language={languageFor(openFile.path)}
