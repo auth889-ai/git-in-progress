@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import HeatMapProfile from "./HeatMap";
+import Achievements from "./Achievements";
+import GettingStarted, { GateRecord } from "./GettingStarted";
 import { RepoIcon, LockIcon, timeAgo } from "../Icons";
 import { API_URL } from "../../config";
 import "./profile.css";
@@ -148,6 +150,20 @@ const Profile = () => {
         </aside>
 
         <main className="profile-main">
+          <GettingStarted
+            repositories={repositories}
+            commits={commits}
+            starred={starred}
+          />
+
+          <Achievements
+            repositories={repositories}
+            commits={commits}
+            starred={starred}
+          />
+
+          <GateRecord commits={commits} />
+
           <section>
             <h3 className="profile-section-title">Contribution activity</h3>
             <div className="card heat-map-card">

@@ -3,11 +3,11 @@ import HeatMap from "@uiw/react-heat-map";
 
 // Violet contribution scale to match the premium light theme
 const PANEL_COLORS = {
-  0: "#eef0f6",
-  1: "#ddd6fe",
-  3: "#a78bfa",
-  6: "#8b5cf6",
-  10: "#6d28d9",
+  0: "#e6eee7",
+  1: "#c3e2cf",
+  3: "#79b98f",
+  6: "#3f8f68",
+  10: "#245c41",
 };
 
 // Aggregate raw ISO timestamps into { date, count } per day
@@ -36,7 +36,7 @@ const HeatMapProfile = ({ timestamps = [] }) => {
       </h4>
       <HeatMap
         className="HeatMapProfile"
-        style={{ width: "100%", color: "#64748b" }}
+        style={{ width: "100%", color: "#5c6f62" }}
         value={activityData}
         weekLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
         startDate={startDate}

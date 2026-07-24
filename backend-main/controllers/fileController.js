@@ -245,7 +245,7 @@ async function listUserCommits(req, res) {
   const { userId } = req.params;
   try {
     const commits = await Commit.find({ author: userId })
-      .select("message createdAt repository")
+      .select("message createdAt repository policyRisk.verdict")
       .sort({ createdAt: -1 });
     res.json(commits);
   } catch (err) {
