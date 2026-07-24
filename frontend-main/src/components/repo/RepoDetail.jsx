@@ -16,6 +16,7 @@ import CommitHistory from "./CommitHistory";
 import FollowButton from "../user/FollowButton";
 import IssueList from "./IssueList";
 import RepoHealth from "./RepoHealth";
+import RepoGraph from "./RepoGraph";
 import "./repo.css";
 
 const EXT_LANG = {
@@ -548,6 +549,12 @@ const RepoDetail = () => {
             >
               💚 Health
             </button>
+            <button
+              className={`repo-tab ${activeTab === "graph" ? "active" : ""}`}
+              onClick={() => setActiveTab("graph")}
+            >
+              🕸️ Graph
+            </button>
             {isOwner && (
               <button
                 className={`repo-tab ${activeTab === "settings" ? "active" : ""}`}
@@ -888,6 +895,8 @@ const RepoDetail = () => {
         )}
 
         {activeTab === "health" && <RepoHealth repoId={id} />}
+
+        {activeTab === "graph" && <RepoGraph repoId={id} />}
 
         {activeTab === "settings" && isOwner && (
           <div className="repo-section">

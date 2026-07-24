@@ -35,4 +35,13 @@ reproduced below. Local reference clones live in `../winner-reference/`.
   **automatic remediation** — BLOCK verdicts auto-open an issue with the
   evidence and rollback plan.
 
-Thanks to all three teams for publishing their work.
+## GraphDev (Most Impactful on GitLab & Anthropic — Grand Prize)
+
+- Repo: https://gitlab.com/gitlab-ai-hackathon/participants/35368827
+- Devpost: https://devpost.com/software/graphdev
+- Idea adopted here: **structural impact analysis** — parse import/require
+  edges into a dependency graph, then BFS-ripple from changed files to find
+  everything indirectly affected ("from blind diffs to structural
+  understanding"). See `backend-main/services/depGraph.js` and the repo Graph tab.
+
+Thanks to all these teams for publishing their work.

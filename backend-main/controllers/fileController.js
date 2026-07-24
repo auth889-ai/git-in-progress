@@ -5,6 +5,7 @@ const Repository = require("../models/repoModel");
 const Issue = require("../models/issueModel");
 const { reviewDiff, onboardingBriefing } = require("../services/aiReviewer");
 const { computeFullRisk, repoMemoryNotes, scanSecrets } = require("../services/riskEngine");
+const { buildGraph, rippleImpact } = require("../services/depGraph");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
 const MAX_PATCH_CHARS = 100 * 1024;
@@ -566,9 +567,33 @@ async function repoOnboarding(req, res) {
   }
 }
 
+// GET /repo/:id/graph — dependency graph + optional ripple impact for changed files
+async function getRepoGraph(req, res) {
+  const { id } = req.params;
+  try {
+    const files = await File.find({ repository: id }).select("path content storage encoding");
+    const graph = buildGraph(files);
+    let impact = [];
+    if (req.query.changed) {
+      const changed = String(req.query.changed).split(",").map((s) => s.trim()).filter(Boolean);
+      impact = rippleImpact(graph, changed, 3);
+    }
+    // rank hubs (most depended-upon files)
+    const inDeg = {};
+    for (const e of graph.edges) inDeg[e.to] = (inDeg[e.to] || 0) + 1;
+    const hubs = Object.entries(inDeg).sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .map(([path, count]) => ({ path, count }));
+    res.json({ nodeCount: graph.nodes.length, edgeCount: graph.edges.length, nodes: graph.nodes, edges: graph.edges, hubs, impact });
+  } catch (err) {
+    console.error("Error building graph : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 module.exports = {
   uploadFiles,
   repoOnboarding,
+  getRepoGraph,
   reviewCommit,
   revertCommit,
   getRepoHealth,
