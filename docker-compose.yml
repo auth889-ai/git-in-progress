@@ -1,0 +1,9 @@
+# Runs the real GraphDev tree-sitter engine as a container next to the app.
+# The Node backend calls it at GRAPHDEV_ENGINE_URL (default http://graphdev-engine:8900),
+# and falls back to its built-in JS parser if the container is not running.
+services:
+  graphdev-engine:
+    build: ./graphdev-engine
+    ports:
+      - "8900:8900"
+    restart: unless-stopped

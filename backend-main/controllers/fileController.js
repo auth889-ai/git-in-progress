@@ -577,7 +577,30 @@ async function getRepoGraph(req, res) {
   const { id } = req.params;
   try {
     const files = await File.find({ repository: id }).select("path content storage encoding");
-    const graph = buildGraph(files);
+    // Prefer the real GraphDev Python engine (tree-sitter); fall back to JS parser
+    let graph;
+    const engineUrl = process.env.GRAPHDEV_ENGINE_URL || "http://127.0.0.1:8900";
+    try {
+      const inline = files
+        .filter((f) => f.storage !== "b2" && f.encoding !== "base64" && f.content)
+        .map((f) => ({ path: f.path, content: f.content }));
+      const changed = req.query.changed ? String(req.query.changed).split(",").map((s) => s.trim()) : [];
+      const resp = await fetch(`${engineUrl}/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: inline, changed, depth: 3 }),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!resp.ok) throw new Error(`engine ${resp.status}`);
+      const g = await resp.json();
+      graph = { nodes: g.nodes.map((n) => n.path), edges: g.edges };
+      graph._engine = g.engine;
+      graph._unitCount = g.unitCount;
+      graph._impactFromEngine = g.impact;
+    } catch (engineErr) {
+      graph = buildGraph(files);
+      graph._engine = "js-fallback";
+    }
     let impact = [];
     if (req.query.changed) {
       const changed = String(req.query.changed).split(",").map((s) => s.trim()).filter(Boolean);
@@ -589,7 +612,7 @@ async function getRepoGraph(req, res) {
     const hubs = Object.entries(inDeg).sort((a, b) => b[1] - a[1]).slice(0, 5)
       .map(([path, count]) => ({ path, count }));
     const cycles = detectCycles(graph);
-    res.json({ nodeCount: graph.nodes.length, edgeCount: graph.edges.length, nodes: graph.nodes, edges: graph.edges, hubs, impact, cycles });
+    res.json({ engine: graph._engine || "js", unitCount: graph._unitCount, nodeCount: graph.nodes.length, edgeCount: graph.edges.length, nodes: graph.nodes, edges: graph.edges, hubs, impact, cycles });
   } catch (err) {
     console.error("Error building graph : ", err.message);
     res.status(500).send("Server error");
