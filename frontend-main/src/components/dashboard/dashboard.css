@@ -146,7 +146,7 @@
 
 /* ---- platform toolbox: structural near-black panel with colored accents ---- */
 .toolbox {
-  background: #24292f;
+  background: #2e2d2a;
   color: #d0d7de;
   border-radius: 20px;
   padding: 20px 18px;
@@ -174,7 +174,7 @@
   font-size: 13px;
 }
 .gate-feed-row:last-child { border-bottom: none; }
-.gate-feed-row:hover { background: #f6f8fa; text-decoration: none; }
+.gate-feed-row:hover { background: #2a2926; text-decoration: none; }
 .gate-feed-msg { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gate-feed-meta { color: var(--color-text-muted); font-size: 12px; white-space: nowrap; }
 @media (max-width: 700px) { .gate-feed-row { grid-template-columns: 70px 1fr; } .gate-feed-meta { display: none; } }
