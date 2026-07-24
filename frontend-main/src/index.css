@@ -1,13 +1,13 @@
 /* ---- Premium light design system (indigo/violet) ---- */
 :root {
-  --color-canvas: #f6f7fb;
+  --color-canvas: #f4f5fa;
   --color-canvas-subtle: #f8f9fe;
   --color-canvas-inset: #ffffff;
   --color-border: #dde1ee;
   --color-border-muted: #eef0f6;
   --color-text: #0f172a;
   --color-text-muted: #52607a;
-  --color-accent: #4f46e5;
+  --color-accent: #4338ca;
   --color-primary: #6366f1;
   --color-primary-deep: #4f46e5;
   --color-success: #10b981;
@@ -18,7 +18,7 @@
   --shadow-card-hover: 0 2px 4px rgba(16, 24, 40, 0.08), 0 8px 24px rgba(99, 102, 241, 0.12);
   --radius: 10px;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-size: 14px;
