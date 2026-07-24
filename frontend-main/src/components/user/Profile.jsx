@@ -133,6 +133,9 @@ const Profile = () => {
               {repositories.length === 1 ? "y" : "ies"}
             </button>
             <span>
+              <b>{userDetails?.followersCount || 0}</b> followers
+            </span>
+            <span>
               <b>{userDetails?.followedUsers?.length || 0}</b> following
             </span>
             <button className="stat-link" onClick={() => document.getElementById("starred-section")?.scrollIntoView({ behavior: "smooth" })}>

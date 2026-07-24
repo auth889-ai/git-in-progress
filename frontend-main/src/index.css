@@ -3,26 +3,26 @@
   /* ElleZephyr UX/UI collection structure — sage-green plant family:
      soft mist-green canvas, white cards floating on it, sage accents,
      deep forest for dark "moment" panels, colored (green) shadows */
-  --color-canvas: #eef3ee;
-  --color-canvas-subtle: #e6eee7;
+  --color-canvas: #f6f8fa;
+  --color-canvas-subtle: #eff2f5;
   --color-canvas-inset: #ffffff;
-  --color-border: #e0e8e1;
-  --color-border-muted: #eaf1ea;
-  --color-text: #101812;
-  --color-text-muted: #5c6f62;
-  --color-accent: #3f8f68;
-  --color-primary: #3f8f68;
-  --color-primary-deep: #2f7050;
+  --color-border: #d0d7de;
+  --color-border-muted: #e7ecf0;
+  --color-text: #1f2328;
+  --color-text-muted: #656d76;
+  --color-accent: #0969da;
+  --color-primary: #1f883d;
+  --color-primary-deep: #1a7f37;
   --color-teal: #0d9488;
   --color-amber: #d9932c;
   --color-rose: #d6567f;
   --color-success: #10b981;
   --color-danger: #dc2626;
   --color-danger-btn: #ef4444;
-  --gradient-primary: linear-gradient(135deg, #3f8f68 0%, #2a9d8f 100%);
-  --shadow-card: 0 2px 6px rgba(77, 155, 114, 0.06), 0 10px 30px rgba(77, 155, 114, 0.12);
-  --shadow-card-hover: 0 4px 10px rgba(77, 155, 114, 0.08), 0 16px 40px rgba(77, 155, 114, 0.16);
-  --radius: 18px;
+  --gradient-primary: linear-gradient(180deg, #2ea043, #1f883d);
+  --shadow-card: 0 1px 3px rgba(31, 35, 40, 0.08), 0 8px 24px rgba(31, 35, 40, 0.06);
+  --shadow-card-hover: 0 3px 6px rgba(31, 35, 40, 0.08), 0 12px 28px rgba(31, 35, 40, 0.12);
+  --radius: 12px;
 
   font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Helvetica, Arial, sans-serif;
@@ -45,14 +45,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--color-canvas);
-  background-image: radial-gradient(
-      at 0% 0%,
-      rgba(121, 185, 143, 0.16) 0,
-      transparent 55%
-    ),
-    radial-gradient(at 100% 0%, rgba(232, 200, 119, 0.16) 0, transparent 55%),
-    radial-gradient(at 100% 100%, rgba(103, 183, 220, 0.10) 0, transparent 55%),
-    radial-gradient(at 50% 100%, rgba(226, 242, 233, 0.6) 0, transparent 55%);
   background-repeat: no-repeat;
 }
 
@@ -67,7 +59,7 @@ a:hover {
 h1, h2, h3, h4 {
   margin: 0;
   font-weight: 700;
-  color: #0f1711;
+  color: #1f2328;
   letter-spacing: -0.01em;
 }
 
@@ -101,8 +93,8 @@ p {
   transition: all 0.15s ease;
 }
 .btn:hover {
-  border-color: #b9d2c2;
-  background-color: #f7fbf8;
+  border-color: #b6c2cc;
+  background-color: #f3f4f6;
   text-decoration: none;
   transform: translateY(-1px);
 }
@@ -116,11 +108,11 @@ p {
   color: #ffffff;
   background: var(--gradient-primary);
   border: none;
-  box-shadow: 0 2px 8px rgba(63, 143, 104, 0.35);
+  box-shadow: 0 1px 2px rgba(31, 136, 61, 0.3);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #35795a 0%, #21857b 100%);
-  box-shadow: 0 4px 14px rgba(63, 143, 104, 0.45);
+  background: #1a7f37;
+  box-shadow: 0 2px 6px rgba(31, 136, 61, 0.35);
 }
 
 .btn-danger {
@@ -153,8 +145,8 @@ p {
 }
 .form-input:focus,
 .form-textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(63, 143, 104, 0.20);
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.25);
 }
 
 .form-label {
@@ -172,7 +164,7 @@ p {
 
 .card {
   background-color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 16px;
   box-shadow: var(--shadow-card);
@@ -189,8 +181,8 @@ p {
   font-weight: 600;
   line-height: 18px;
   color: var(--color-primary-deep);
-  background-color: rgba(63, 143, 104, 0.10);
-  border: 1px solid rgba(63, 143, 104, 0.28);
+  background-color: #ddf4e4;
+  border: 1px solid rgba(31, 136, 61, 0.35);
   border-radius: 2em;
 }
 
@@ -218,7 +210,7 @@ p {
   font-weight: 600;
   flex-shrink: 0;
   user-select: none;
-  box-shadow: 0 4px 14px rgba(63, 143, 104, 0.3);
+  box-shadow: 0 2px 8px rgba(31, 35, 40, 0.2);
 }
 
 .spinner-note {
@@ -242,14 +234,14 @@ p {
 .stat-card { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border: none; }
 .stat-card .stat-num { font-size: 26px; font-weight: 800; color: var(--color-primary-deep); }
 .stat-card .stat-label { font-size: 13px; color: var(--color-text-muted); font-weight: 600; }
-.stat-cards .stat-card:nth-child(1) { background: linear-gradient(150deg, #e2f2e9, #ffffff 70%); }
-.stat-cards .stat-card:nth-child(1) .stat-num { color: #3f8f68; }
-.stat-cards .stat-card:nth-child(2) { background: linear-gradient(150deg, #fbe7ee, #ffffff 70%); }
-.stat-cards .stat-card:nth-child(2) .stat-num { color: #d6567f; }
-.stat-cards .stat-card:nth-child(3) { background: linear-gradient(150deg, #e0eff9, #ffffff 70%); }
-.stat-cards .stat-card:nth-child(3) .stat-num { color: #3b82c4; }
-.stat-cards .stat-card:nth-child(4) { background: linear-gradient(150deg, #fdf3e3, #ffffff 70%); }
-.stat-cards .stat-card:nth-child(4) .stat-num { color: #d9932c; }
+.stat-cards .stat-card:nth-child(1) { background: #ffffff; border-top: 3px solid #1f883d; }
+.stat-cards .stat-card:nth-child(1) .stat-num { color: #1a7f37; }
+.stat-cards .stat-card:nth-child(2) { background: #ffffff; border-top: 3px solid #0969da; }
+.stat-cards .stat-card:nth-child(2) .stat-num { color: #0969da; }
+.stat-cards .stat-card:nth-child(3) { background: #ffffff; border-top: 3px solid #bc4c00; }
+.stat-cards .stat-card:nth-child(3) .stat-num { color: #bc4c00; }
+.stat-cards .stat-card:nth-child(4) { background: #ffffff; border-top: 3px solid #9a6700; }
+.stat-cards .stat-card:nth-child(4) .stat-num { color: #9a6700; }
 
 /* ===== 2026 premium pass: bold type, ledger numerals, whitespace, micro-motion ===== */
 h1 { font-size: 28px; letter-spacing: -0.02em; }
@@ -269,7 +261,7 @@ h3 { font-size: 16px; }
 
 /* animated link underline (micro-interaction) */
 .gh-navbar-links a, .file-breadcrumb a, .repo-card-title a {
-  background-image: linear-gradient(90deg, var(--color-primary), #79b98f);
+  background-image: linear-gradient(90deg, #0969da, #0969da);
   background-size: 0% 2px;
   background-repeat: no-repeat;
   background-position: left 100%;
@@ -316,13 +308,13 @@ section, .repo-section { scroll-margin-top: 80px; }
   height: 4px;
   margin-top: 7px;
   border-radius: 99px;
-  background: linear-gradient(90deg, #3f8f68, #2a9d8f 55%, #e8c877);
+  background: #0969da;
 }
 .section-heading::after { margin-left: auto; margin-right: auto; }
 
 /* link color: deep teal-green, hover teal */
-a { color: #2f7050; }
-a:hover { color: #21857b; }
+a { color: #0969da; }
+a:hover { color: #0550ae; }
 
 /* gradient text utility for headline numbers */
 .stat-card .stat-num { background: none; }

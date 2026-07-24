@@ -122,9 +122,51 @@ async function getUserProfile(req, res) {
       return res.status(404).json({ message: "User not found!" });
     }
 
-    res.send(user);
+    // How many users follow this one (stored as ObjectId or legacy string)
+    const followersCount = await usersCollection.countDocuments({
+      followedUsers: { $in: [new ObjectId(currentID), currentID] },
+    });
+
+    res.send({ ...user, followersCount });
   } catch (err) {
     console.error("Error during fetching : ", err.message);
+    res.status(500).send("Server error!");
+  }
+}
+
+// PATCH /follow/:targetId — follow or unfollow another user (toggle)
+async function toggleFollow(req, res) {
+  const { targetId } = req.params;
+  const me = req.user.id;
+
+  try {
+    if (String(targetId) === String(me)) {
+      return res.status(400).json({ message: "You cannot follow yourself!" });
+    }
+    await connectClient();
+    const db = client.db("githubclone");
+    const usersCollection = db.collection("users");
+
+    const target = await usersCollection.findOne({ _id: new ObjectId(targetId) });
+    if (!target) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    const meDoc = await usersCollection.findOne({ _id: new ObjectId(me) });
+    const following = (meDoc?.followedUsers || []).some(
+      (id) => String(id) === String(targetId)
+    );
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(me) },
+      following
+        ? { $pull: { followedUsers: { $in: [new ObjectId(targetId), targetId] } } }
+        : { $addToSet: { followedUsers: new ObjectId(targetId) } }
+    );
+
+    res.json({ following: !following, username: target.username });
+  } catch (err) {
+    console.error("Error during follow toggle : ", err.message);
     res.status(500).send("Server error!");
   }
 }
@@ -201,6 +243,7 @@ module.exports = {
   signup,
   login,
   getUserProfile,
+  toggleFollow,
   updateUserProfile,
   deleteUserProfile,
 };

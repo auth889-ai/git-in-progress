@@ -13,6 +13,7 @@ import { API_URL } from "../../config";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import CommitHistory from "./CommitHistory";
+import FollowButton from "../user/FollowButton";
 import IssueList from "./IssueList";
 import RepoHealth from "./RepoHealth";
 import "./repo.css";
@@ -458,6 +459,10 @@ const RepoDetail = () => {
               <span className="repo-owner">
                 {repo.owner?.username || "unknown"}
               </span>
+              <FollowButton
+                targetId={repo.owner?._id || repo.owner}
+                targetName={repo.owner?.username || "owner"}
+              />
               {" / "}
               <span className="repo-name-strong">{repo.name}</span>
             </h1>
