@@ -105,6 +105,12 @@ const RepoGraph = ({ repoId }) => {
 
   return (
     <div className="repo-section">
+      {graph.engine && (
+        <p className="text-muted" style={{ fontSize: 12, marginBottom: 10 }}>
+          parsed by <b>{graph.engine === "graphdev-tree-sitter" ? "GraphDev Python engine (tree-sitter)" : "built-in JS parser"}</b>
+          {graph.unitCount ? ` · ${graph.unitCount} code units` : ""}
+        </p>
+      )}
       <div className="stat-cards">
         <div className="card stat-card">
           <span className="stat-num">{graph.nodeCount}</span>
