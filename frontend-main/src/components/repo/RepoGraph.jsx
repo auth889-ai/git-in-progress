@@ -2,6 +2,65 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../../config";
 
+// Real SVG node-link diagram — nodes laid out on a circle, edges drawn as
+// arrowed lines. Changed/selected node = green, ripple-impacted = orange.
+const GraphSVG = ({ graph, selected, impacted, onSelect }) => {
+  const nodes = graph.nodes || [];
+  if (nodes.length === 0)
+    return <p className="text-muted">No import/require links yet — the graph draws once files reference each other.</p>;
+
+  const W = 640, H = 380, cx = W / 2, cy = H / 2;
+  const R = Math.min(cx, cy) - 60;
+  const pos = {};
+  nodes.forEach((n, i) => {
+    const a = (2 * Math.PI * i) / nodes.length - Math.PI / 2;
+    pos[n] = { x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) };
+  });
+  const short = (p) => p.split("/").pop();
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ maxWidth: W, display: "block", margin: "0 auto" }}>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#8b95b3" />
+          </marker>
+        </defs>
+        {(graph.edges || []).map((e, i) => {
+          const a = pos[e.from], b = pos[e.to];
+          if (!a || !b) return null;
+          const hot = selected && (impacted.has(e.from) || e.from === selected);
+          return (
+            <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+              stroke={hot ? "#bc4c00" : "#d0d7de"} strokeWidth={hot ? 2 : 1.2}
+              markerEnd="url(#arrow)" />
+          );
+        })}
+        {nodes.map((n) => {
+          const p = pos[n];
+          const isSel = n === selected;
+          const isImp = impacted.has(n);
+          const fill = isSel ? "#1f883d" : isImp ? "#bc4c00" : "#0969da";
+          return (
+            <g key={n} style={{ cursor: "pointer" }} onClick={() => onSelect(isSel ? "" : n)}>
+              <circle cx={p.x} cy={p.y} r={isSel ? 11 : 8} fill={fill} stroke="#fff" strokeWidth="2" />
+              <text x={p.x} y={p.y - 14} textAnchor="middle" fontSize="11"
+                fill={isSel || isImp ? fill : "#1f2328"} fontWeight={isSel ? 700 : 500}>
+                {short(n)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <p className="text-muted" style={{ fontSize: 12, textAlign: "center" }}>
+        Click a node to trace its ripple impact · <span style={{ color: "#0969da" }}>●</span> file
+        {" · "}<span style={{ color: "#1f883d" }}>●</span> selected
+        {" · "}<span style={{ color: "#bc4c00" }}>●</span> impacted
+      </p>
+    </div>
+  );
+};
+
 // GraphDev-style structural view: dependency graph + BFS ripple impact.
 // "From blind diffs to structural understanding."
 const RepoGraph = ({ repoId }) => {
@@ -124,6 +183,12 @@ const RepoGraph = ({ repoId }) => {
           <span className="stat-num">{impacted.size}</span>
           <span className="stat-label">ripple-impacted</span>
         </div>
+      </div>
+
+      {/* Real visual node-link graph (GraphDev-style): nodes = files, lines = imports */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <h3>🕸️ Dependency graph</h3>
+        <GraphSVG graph={graph} selected={selected} impacted={impacted} onSelect={setSelected} />
       </div>
 
       {graph.cycles?.length > 0 && (
