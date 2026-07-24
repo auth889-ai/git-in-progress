@@ -190,7 +190,7 @@ const SECRET_PATTERNS = [
   { kind: "Private key file", re: /-----BEGIN [A-Z ]*PRIVATE KEY-----/ },
   { kind: "OpenRouter/Anthropic key", re: /sk-(or|ant)-[A-Za-z0-9-]{10,}/ },
   { kind: "GitHub token", re: /gh[pousr]_[A-Za-z0-9]{20,}/ },
-  { kind: "Hardcoded secret", re: /(api[_-]?key|secret|password|token)\s*[:=]\s*['"][^'"\s]{8,}['"]/i },
+  { kind: "Hardcoded secret", re: /(api[_-]?key|secret|password|token)\s*[:=]\s*['"]?[^'"\s]{8,}/i },
 ];
 
 function scanSecrets(files) {
