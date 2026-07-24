@@ -605,3 +605,48 @@
 .stat-link b {
   color: var(--color-text);
 }
+
+/* ---- premium file browser ---- */
+.file-list {
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}
+.file-table-header {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(168, 85, 247, 0.06));
+  padding: 13px 18px;
+}
+.file-row {
+  padding: 11px 18px;
+  transition: background 0.12s ease, padding-left 0.12s ease;
+}
+.file-row:hover {
+  background: rgba(99, 102, 241, 0.05);
+  padding-left: 22px;
+}
+.file-row .file-link {
+  color: var(--color-text);
+  font-weight: 500;
+}
+.file-row .file-link:hover {
+  color: var(--color-accent);
+}
+
+/* section titles with accent bar */
+.repo-section > h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+.repo-section > h3::before {
+  content: "";
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--gradient-primary);
+}
+
+.issue-list {
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}

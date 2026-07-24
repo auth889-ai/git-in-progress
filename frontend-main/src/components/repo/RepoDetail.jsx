@@ -56,6 +56,16 @@ const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
 const BINARY_EXTS = [...IMAGE_EXTS, "pdf", "zip", "gz", "tar", "mp3", "mp4", "mov", "woff", "woff2", "ttf", "eot", "exe", "bin"];
 
 const fileExt = (path) => (path || "").split(".").pop().toLowerCase();
+
+const EXT_COLORS = {
+  js: "#f1c40f", jsx: "#61dafb", ts: "#3178c6", tsx: "#3178c6",
+  py: "#3572A5", java: "#b07219", rb: "#701516", go: "#00ADD8",
+  rs: "#DEA584", php: "#4F5D95", html: "#e34c26", css: "#8b5cf6",
+  scss: "#c6538c", json: "#f97316", md: "#0ea5e9", yml: "#a855f7",
+  yaml: "#a855f7", sh: "#10b981", sql: "#e38c00", ipynb: "#f97316",
+  png: "#16a34a", jpg: "#16a34a", jpeg: "#16a34a", gif: "#16a34a", svg: "#16a34a",
+};
+const colorFor = (path) => EXT_COLORS[fileExt(path)] || "#8b95b3";
 const isImagePath = (path) => IMAGE_EXTS.includes(fileExt(path));
 const isBinaryPath = (path) => BINARY_EXTS.includes(fileExt(path));
 const mimeFor = (path) => {
@@ -719,7 +729,9 @@ const RepoDetail = () => {
                   ))}
                   {dirFiles.map((file) => (
                     <div key={file._id} className="file-row">
-                      <FileIcon />
+                      <span style={{ color: colorFor(file.path), display: "inline-flex" }}>
+                        <FileIcon />
+                      </span>
                       <button
                         className="file-link"
                         onClick={() => handleOpenFile(file._id)}
