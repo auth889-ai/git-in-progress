@@ -131,10 +131,17 @@
 }
 
 @media screen and (max-width: 768px) {
+  /* single column: show the important content (stats, gate feed) FIRST,
+     repo list after — kills the "scroll forever to see anything" feeling */
   .dashboard-layout {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     padding: 16px;
   }
+  .dashboard-main { order: 1; }
+  .dashboard-sidebar { order: 2; }
+  .dashboard-aside-right { order: 3; display: block; }
+  .gate-feed { max-height: 300px; }
 }
 
 /* ---- platform toolbox: structural near-black panel with colored accents ---- */
