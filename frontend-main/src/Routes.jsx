@@ -9,6 +9,9 @@ import Signup from "./components/auth/Signup";
 import Landing from "./components/Landing";
 import CreateRepo from "./components/repo/CreateRepo";
 import RepoDetail from "./components/repo/RepoDetail";
+import Explore from "./components/dashboard/Explore";
+import Stars from "./components/dashboard/Stars";
+import MyIssues from "./components/dashboard/MyIssues";
 
 // Auth Context
 import { useAuth } from "./authContext";
@@ -43,6 +46,9 @@ const ProjectRoutes = () => {
     { path: "/signup", element: <Signup /> },
     { path: "/profile", element: <Profile /> },
     { path: "/user/:userId", element: <Profile /> },
+    { path: "/explore", element: <Explore /> },
+    { path: "/stars", element: <Stars /> },
+    { path: "/issues", element: <MyIssues /> },
     { path: "/create", element: <CreateRepo /> },
     { path: "/repository/:id", element: <RepoDetail /> },
   ]);

@@ -129,8 +129,30 @@ async function preMortemIssue(req, res) {
   }
 }
 
+// GET /issues/user/:userId — all issues in repositories the user owns
+async function getIssuesForUser(req, res) {
+  const { userId } = req.params;
+  try {
+    const repos = await Repository.find({ owner: userId }).select("_id name");
+    const nameById = new Map(repos.map((r) => [String(r._id), r.name]));
+    const issues = await Issue.find({ repository: { $in: repos.map((r) => r._id) } })
+      .sort({ updatedAt: -1 })
+      .limit(100);
+    res.json(
+      issues.map((i) => ({
+        ...i.toObject(),
+        repoName: nameById.get(String(i.repository)) || "unknown",
+      }))
+    );
+  } catch (err) {
+    console.error("Error fetching user issues : ", err.message);
+    res.status(500).send("Server error");
+  }
+}
+
 module.exports = {
   createIssue,
+  getIssuesForUser,
   updateIssueById,
   deleteIssueById,
   getAllIssues,

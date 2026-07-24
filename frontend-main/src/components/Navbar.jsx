@@ -26,7 +26,9 @@ const Navbar = () => {
 
       <div className="gh-navbar-links">
         <Link to="/">Dashboard</Link>
-        <Link to="/create">New repository</Link>
+        <Link to="/explore">Explore</Link>
+        <Link to="/issues">Issues</Link>
+        <Link to="/stars">Stars</Link>
         <Link to="/profile">Profile</Link>
       </div>
 
@@ -48,6 +50,18 @@ const Navbar = () => {
         <Link to="/" className={`dock-item ${location.pathname === "/" ? "active" : ""}`}>
           <span className="dock-icon">🏠</span>
           {location.pathname === "/" && <span>Home</span>}
+        </Link>
+        <Link to="/explore" className={`dock-item ${location.pathname === "/explore" ? "active" : ""}`}>
+          <span className="dock-icon">🧭</span>
+          {location.pathname === "/explore" && <span>Explore</span>}
+        </Link>
+        <Link to="/issues" className={`dock-item ${location.pathname === "/issues" ? "active" : ""}`}>
+          <span className="dock-icon">🐛</span>
+          {location.pathname === "/issues" && <span>Issues</span>}
+        </Link>
+        <Link to="/stars" className={`dock-item ${location.pathname === "/stars" ? "active" : ""}`}>
+          <span className="dock-icon">⭐</span>
+          {location.pathname === "/stars" && <span>Stars</span>}
         </Link>
         <Link to="/create" className={`dock-item ${location.pathname === "/create" ? "active" : ""}`}>
           <span className="dock-icon">➕</span>

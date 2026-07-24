@@ -6,6 +6,7 @@ const issueRouter = express.Router();
 
 // Public reads
 issueRouter.get("/issue/all/:id", issueController.getAllIssues);
+issueRouter.get("/issues/user/:userId", issueController.getIssuesForUser);
 issueRouter.get("/issue/:id", issueController.getIssueById);
 
 // Writes require a valid JWT

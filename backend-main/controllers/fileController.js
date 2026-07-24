@@ -2,6 +2,7 @@ const { createTwoFilesPatch, applyPatch } = require("diff");
 const File = require("../models/fileModel");
 const Commit = require("../models/commitModel");
 const Repository = require("../models/repoModel");
+const Issue = require("../models/issueModel");
 const { reviewDiff } = require("../services/aiReviewer");
 const { computeFullRisk, repoMemoryNotes } = require("../services/riskEngine");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
@@ -128,6 +129,25 @@ async function uploadFiles(req, res) {
       changes,
       policyRisk: await computeFullRisk(id, changes, message),
     });
+
+    // Launch-Control-style automatic remediation: a BLOCK doesn't just say
+    // "fix it" — it opens an issue with the evidence and the rollback plan.
+    if (commit.policyRisk?.verdict === "BLOCK") {
+      try {
+        const issue = await Issue.create({
+          title: `🚫 Risk gate BLOCK: ${commit.message.slice(0, 80)}`,
+          description:
+            `The risk gate blocked commit "${commit.message}" (score ${commit.policyRisk.score}).\n\n` +
+            `Evidence:\n${(commit.policyRisk.reasons || []).map((r) => `- ${r}`).join("\n")}\n\n` +
+            `Rollback plan:\n${(commit.policyRisk.rollback || []).map((r) => `- ${r}`).join("\n")}\n\n` +
+            `Fix the findings above (or revert the commit from the Commits tab), then close this issue.`,
+          repository: id,
+        });
+        await Repository.findByIdAndUpdate(id, { $push: { issues: issue._id } });
+      } catch (issueErr) {
+        console.error("Auto-remediation issue failed:", issueErr.message);
+      }
+    }
 
     res.status(201).json({ message: "Files uploaded!", commit });
   } catch (err) {
