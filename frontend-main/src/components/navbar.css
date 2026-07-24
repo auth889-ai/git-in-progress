@@ -79,9 +79,9 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #3a4632;
+  background: #35261a;
   border-radius: 22px;
-  box-shadow: 0 10px 30px rgba(40, 46, 30, 0.35);
+  box-shadow: 0 10px 30px rgba(40, 28, 16, 0.4);
   animation: riseIn 0.5s ease both;
 }
 .dock-item {
@@ -92,7 +92,7 @@
   border: none;
   background: transparent;
   border-radius: 16px;
-  color: #cfd6c4;
+  color: #d8c9b2;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -101,7 +101,7 @@
 }
 .dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #fff; }
 .dock-item.active {
-  background: #55663f;
+  background: #5d4230;
   color: #ffffff;
 }
 .dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6)); }
@@ -110,7 +110,11 @@ body { padding-bottom: 90px; }
 
 /* header warmed to match the reference */
 .gh-navbar {
-  background-color: rgba(247, 245, 241, 0.9);
-  border-bottom: 1px solid #e6e2d8;
-  box-shadow: none;
+  background-color: #35261a;
+  border-bottom: 1px solid #4a3423;
+  box-shadow: 0 2px 14px rgba(40, 28, 16, 0.35);
 }
+.gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #f3ead9; }
+.gh-navbar .gh-navbar-links a:hover { color: #e0b473; }
+.gh-navbar .btn { background: #4a3423; color: #f3ead9; border-color: #5d4230; }
+.gh-navbar .btn:hover { background: #5d4230; }

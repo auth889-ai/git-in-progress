@@ -36,12 +36,14 @@
 
 /* ===== Travel-reference hero: dark forest panel + hot accent ===== */
 .hero {
-  background: linear-gradient(145deg, #2e3a2a, #1f2a1e);
+  background:
+    linear-gradient(145deg, rgba(53, 38, 26, 0.88), rgba(38, 26, 16, 0.92)),
+    url("https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=70") center/cover;
   border-radius: 28px;
   padding: 64px 40px 56px;
   color: #f5f3ec;
   max-width: 980px;
-  box-shadow: 0 24px 60px rgba(40, 50, 30, 0.35);
+  box-shadow: 0 24px 60px rgba(40, 28, 16, 0.4);
 }
 .hero h1 { color: #ffffff; }
 .gradient-text {
@@ -53,12 +55,12 @@
 .hero .btn { background: rgba(255,255,255,.08); color: #f5f3ec; border-color: rgba(255,255,255,.2); }
 .hero .btn-primary { background: #f97316; border: none; border-radius: 999px; box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); }
 .hero .btn-primary:hover { background: #ea580c; }
-.flow-step { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.15); color: #f5f3ec; }
+.flow-step { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); color: #f5ead8; }
 .flow-dot { background: #fb923c; }
 @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(251,146,60,.5); } 50% { box-shadow: 0 0 0 7px rgba(251,146,60,0); } }
 .flow-arrow { color: #cfd6c4; }
 .orb-a { background: #f97316; opacity: .18; }
-.orb-b { background: #84cc16; opacity: .15; }
+.orb-b { background: #a06a35; opacity: .18; }
 .orb-c { background: #f59e0b; opacity: .15; }
 
 /* ===== Neumorphic feature tiles (soft-UI reference) ===== */
