@@ -37,31 +37,31 @@
 /* ===== Travel-reference hero: dark forest panel + hot accent ===== */
 .hero {
   background:
-    linear-gradient(145deg, rgba(53, 38, 26, 0.88), rgba(38, 26, 16, 0.92)),
+    linear-gradient(145deg, rgba(10, 12, 18, 0.85), rgba(5, 6, 10, 0.92)),
     url("https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=70") center/cover;
   border-radius: 28px;
   padding: 64px 40px 56px;
-  color: #f5f3ec;
+  color: #f9fafb;
   max-width: 980px;
-  box-shadow: 0 24px 60px rgba(40, 28, 16, 0.4);
+  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.4);
 }
 .hero h1 { color: #ffffff; }
 .gradient-text {
-  background: linear-gradient(90deg, #fb923c, #f59e0b, #fb923c);
+  background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
   background-size: 300% 100%;
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .hero-sub { color: #cfd6c4; }
-.hero .btn { background: rgba(255,255,255,.08); color: #f5f3ec; border-color: rgba(255,255,255,.2); }
-.hero .btn-primary { background: #f97316; border: none; border-radius: 999px; box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); }
-.hero .btn-primary:hover { background: #ea580c; }
-.flow-step { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); color: #f5ead8; }
-.flow-dot { background: #fb923c; }
-@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(251,146,60,.5); } 50% { box-shadow: 0 0 0 7px rgba(251,146,60,0); } }
+.hero .btn { background: rgba(255,255,255,.08); color: #f9fafb; border-color: rgba(255,255,255,.2); }
+.hero .btn-primary { background: #2563eb; border: none; border-radius: 999px; box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+.hero .btn-primary:hover { background: #1d4ed8; }
+.flow-step { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.18); color: #f9fafb; }
+.flow-dot { background: #3b82f6; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.5); } 50% { box-shadow: 0 0 0 7px rgba(59,130,246,0); } }
 .flow-arrow { color: #cfd6c4; }
-.orb-a { background: #f97316; opacity: .18; }
-.orb-b { background: #a06a35; opacity: .18; }
-.orb-c { background: #f59e0b; opacity: .15; }
+.orb-a { background: #3b82f6; opacity: .14; }
+.orb-b { background: #111827; opacity: .10; }
+.orb-c { background: #60a5fa; opacity: .12; }
 
 /* ===== Neumorphic feature tiles (soft-UI reference) ===== */
 .feature-card {
@@ -82,10 +82,10 @@
 }
 
 /* ---- stats band (dark cocoa strip) ---- */
-.stats-band { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 980px; margin: 10px auto 50px; background: #2a1c10; border-radius: 24px; padding: 30px 24px; }
+.stats-band { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 980px; margin: 10px auto 50px; background: #111111; border-radius: 24px; padding: 30px 24px; }
 .stats-band-item { text-align: center; display: flex; flex-direction: column; gap: 4px; }
-.stats-band-num { font-size: 30px; font-weight: 800; color: #e0b473; font-variant-numeric: tabular-nums; }
-.stats-band-label { font-size: 13px; color: #d8c9b2; }
+.stats-band-num { font-size: 30px; font-weight: 800; color: #60a5fa; font-variant-numeric: tabular-nums; }
+.stats-band-label { font-size: 13px; color: #9ca3af; }
 
 /* ---- how it works ---- */
 .section-heading { text-align: center; font-size: 26px; margin: 20px 0 24px; }
@@ -95,17 +95,17 @@
 .how-num { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%; background: var(--gradient-primary); color: #fff; font-weight: 800; margin-bottom: 10px; }
 
 /* ---- CTA band ---- */
-.cta-band { position: relative; z-index: 2; text-align: center; max-width: 980px; margin: 0 auto 60px; background: linear-gradient(145deg, #2a1c10, #261a10); color: #f3ead9; border-radius: 28px; padding: 50px 30px; }
+.cta-band { position: relative; z-index: 2; text-align: center; max-width: 980px; margin: 0 auto 60px; background: linear-gradient(145deg, #111111, #000000); color: #f9fafb; border-radius: 28px; padding: 50px 30px; }
 .cta-band h2 { color: #ffffff; font-size: 28px; }
-.cta-band p { color: #d8c9b2; margin: 10px 0 22px; }
+.cta-band p { color: #9ca3af; margin: 10px 0 22px; }
 
 /* ---- multi-column footer ---- */
-.site-footer { position: relative; z-index: 2; background: #2a1c10; color: #d8c9b2; margin: 0 -24px; padding: 48px 32px 20px; }
+.site-footer { position: relative; z-index: 2; background: #111111; color: #9ca3af; margin: 0 -24px; padding: 48px 32px 20px; }
 .footer-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 28px; max-width: 1100px; margin: 0 auto; }
-.footer-cols h4 { color: #f3ead9; margin-bottom: 12px; font-size: 14px; }
-.footer-cols a, .footer-cols span { display: block; color: #d8c9b2; font-size: 13px; margin-bottom: 8px; }
-.footer-cols a:hover { color: #e0b473; text-decoration: none; }
-.footer-bottom { text-align: center; border-top: 1px solid #4a3423; margin-top: 36px; padding-top: 18px; font-size: 12px; }
+.footer-cols h4 { color: #f9fafb; margin-bottom: 12px; font-size: 14px; }
+.footer-cols a, .footer-cols span { display: block; color: #9ca3af; font-size: 13px; margin-bottom: 8px; }
+.footer-cols a:hover { color: #60a5fa; text-decoration: none; }
+.footer-bottom { text-align: center; border-top: 1px solid #27272a; margin-top: 36px; padding-top: 18px; font-size: 12px; }
 @media (max-width: 760px) { .footer-cols { grid-template-columns: 1fr 1fr; } }
 
 /* ---- photos in step cards + showcase split ---- */
@@ -117,5 +117,5 @@
 .showcase { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 34px; align-items: center; max-width: 1050px; margin: 0 auto 56px; }
 .showcase-text h2 { font-size: 26px; margin-bottom: 12px; }
 .showcase-text p { margin-bottom: 20px; }
-.showcase-img { width: 100%; border-radius: 24px; box-shadow: 0 20px 50px rgba(42, 28, 16, 0.3); }
+.showcase-img { width: 100%; border-radius: 24px; box-shadow: 0 20px 50px rgba(17, 24, 39, 0.3); }
 @media (max-width: 800px) { .showcase { grid-template-columns: 1fr; } }

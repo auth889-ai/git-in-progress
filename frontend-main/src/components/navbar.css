@@ -79,10 +79,10 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #fdfaf3;
-  border: 1px solid #e2d9c6;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 22px;
-  box-shadow: 0 10px 30px rgba(90, 70, 45, 0.18);
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.15);
   animation: riseIn 0.5s ease both;
 }
 .dock-item {
@@ -93,17 +93,17 @@
   border: none;
   background: transparent;
   border-radius: 16px;
-  color: #6b5b45;
+  color: #6b7280;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
-.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #2a1c10; }
+.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #111827; }
 .dock-item.active {
-  background: #2a1c10;
-  color: #f3ead9;
+  background: #111827;
+  color: #ffffff;
 }
 .dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6)); }
 .dock-icon { font-size: 16px; }
@@ -111,16 +111,16 @@ body { padding-bottom: 90px; }
 
 /* header warmed to match the reference */
 .gh-navbar {
-  background-color: rgba(246, 240, 228, 0.95);
-  border-bottom: 1px solid #e2d9c6;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e5e7eb;
   box-shadow: none;
 }
-.gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #2a1c10; }
-.gh-navbar .gh-navbar-links a:hover { color: #a06a35; }
+.gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #111827; }
+.gh-navbar .gh-navbar-links a:hover { color: #2563eb; }
 .gh-navbar .btn {
-  background: #2a1c10; color: #f3ead9; border: none;
+  background: #111827; color: #ffffff; border: none;
   border-radius: 999px; padding: 7px 18px;
 }
-.gh-navbar .btn:hover { background: #4a3423; }
-.gh-navbar .btn-primary { background: #2a1c10; box-shadow: none; }
-.gh-navbar .btn-primary:hover { background: #4a3423; }
+.gh-navbar .btn:hover { background: #374151; }
+.gh-navbar .btn-primary { background: #111827; box-shadow: none; }
+.gh-navbar .btn-primary:hover { background: #374151; }

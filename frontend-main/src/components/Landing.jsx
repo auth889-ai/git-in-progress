@@ -105,7 +105,7 @@ const Landing = () => (
               src={[
                 "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=70",
                 "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=70",
-                "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=600&q=70",
+                "https://images.unsplash.com/photo-1551434678-e076c223a692?w=600&q=70",
               ][i]}
             />
             <span className="how-num">{n}</span>
