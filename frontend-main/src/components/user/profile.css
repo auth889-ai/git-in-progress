@@ -125,7 +125,7 @@
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid transparent;
-  background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #2ea043, #0969da) border-box;
+  background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #17171c, #2f9e77) border-box;
   box-shadow: 0 4px 16px rgba(31, 35, 40, 0.15);
 }
 @media screen and (max-width: 768px) {
@@ -155,7 +155,7 @@
 }
 .achievement:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
 .achievement-icon { font-size: 30px; }
-.achievement.earned { background: #ffffff; border-bottom: 3px solid #2ea043; }
+.achievement.earned { background: #e3f4ea; border-bottom: 3px solid #2f9e77; }
 .achievement.locked { opacity: .55; filter: grayscale(.7); }
 .achievement-hint { font-size: 11px; color: var(--color-text-muted); }
 .achievement.earned .achievement-hint { color: #1a7f37; font-weight: 700; }
@@ -187,7 +187,7 @@
 }
 .gs-step:hover { background: #eff2f5; text-decoration: none; }
 .gs-step.done { color: var(--color-text-muted); font-weight: 500; }
-.gs-go { margin-left: auto; color: #0969da; }
+.gs-go { margin-left: auto; color: #2f9e77; }
 
 /* GitHub-style full-width follow button on profile */
 .profile-sidebar .follow-btn { width: 100%; justify-content: center; padding: 6px 12px; font-size: 14px; }

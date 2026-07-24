@@ -100,9 +100,9 @@
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
-.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #0969da; }
+.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #2f9e77; }
 .dock-item.active {
-  background: #24292f;
+  background: #17171c;
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(31, 35, 40, 0.3);
 }
@@ -117,11 +117,11 @@ body { padding-bottom: 90px; }
   box-shadow: 0 1px 8px rgba(31, 35, 40, 0.04);
 }
 .gh-navbar .gh-navbar-brand, .gh-navbar .gh-navbar-links a { color: #111827; }
-.gh-navbar .gh-navbar-links a:hover { color: #0969da; }
+.gh-navbar .gh-navbar-links a:hover { color: #2f9e77; }
 .gh-navbar .btn {
   background: #ffffff; color: #111827; border: 1px solid var(--color-border);
   border-radius: 999px; padding: 7px 18px;
 }
 .gh-navbar .btn:hover { border-color: #b6c2cc; background: #f3f4f6; }
-.gh-navbar .btn-primary { background: var(--gradient-primary); color: #ffffff; border: 1px solid rgba(27,31,36,0.15); box-shadow: 0 1px 2px rgba(31, 136, 61, 0.3); }
-.gh-navbar .btn-primary:hover { background: #1a7f37; }
+.gh-navbar .btn-primary { background: #17171c; color: #ffffff; border: none; box-shadow: 0 1px 3px rgba(23,23,28,0.3); }
+.gh-navbar .btn-primary:hover { background: #2c2c34; }
