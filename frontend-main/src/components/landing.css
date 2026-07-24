@@ -80,3 +80,30 @@
   background: #f7f5f1;
   box-shadow: inset 3px 3px 8px rgba(190,185,170,.4), inset -3px -3px 8px #ffffff;
 }
+
+/* ---- stats band (dark cocoa strip) ---- */
+.stats-band { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; max-width: 980px; margin: 10px auto 50px; background: #35261a; border-radius: 24px; padding: 30px 24px; }
+.stats-band-item { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.stats-band-num { font-size: 30px; font-weight: 800; color: #e0b473; font-variant-numeric: tabular-nums; }
+.stats-band-label { font-size: 13px; color: #d8c9b2; }
+
+/* ---- how it works ---- */
+.section-heading { text-align: center; font-size: 26px; margin: 20px 0 24px; }
+.how-section { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto 50px; }
+.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.how-card { text-align: left; }
+.how-num { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%; background: var(--gradient-primary); color: #fff; font-weight: 800; margin-bottom: 10px; }
+
+/* ---- CTA band ---- */
+.cta-band { position: relative; z-index: 2; text-align: center; max-width: 980px; margin: 0 auto 60px; background: linear-gradient(145deg, #35261a, #261a10); color: #f3ead9; border-radius: 28px; padding: 50px 30px; }
+.cta-band h2 { color: #ffffff; font-size: 28px; }
+.cta-band p { color: #d8c9b2; margin: 10px 0 22px; }
+
+/* ---- multi-column footer ---- */
+.site-footer { position: relative; z-index: 2; background: #35261a; color: #d8c9b2; margin: 0 -24px; padding: 48px 32px 20px; }
+.footer-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 28px; max-width: 1100px; margin: 0 auto; }
+.footer-cols h4 { color: #f3ead9; margin-bottom: 12px; font-size: 14px; }
+.footer-cols a, .footer-cols span { display: block; color: #d8c9b2; font-size: 13px; margin-bottom: 8px; }
+.footer-cols a:hover { color: #e0b473; text-decoration: none; }
+.footer-bottom { text-align: center; border-top: 1px solid #4a3423; margin-top: 36px; padding-top: 18px; font-size: 12px; }
+@media (max-width: 760px) { .footer-cols { grid-template-columns: 1fr 1fr; } }
