@@ -75,13 +75,39 @@ const Landing = () => (
       ))}
     </section>
 
+    <section className="showcase">
+      <div className="showcase-text">
+        <h2>Your code, beautifully organized</h2>
+        <p className="text-muted">
+          Browse folders like GitHub, read syntax-highlighted code in 20+ languages,
+          and see every change as a green/red diff. Images preview inline, office
+          files download cleanly, and everything lives in Backblaze B2 cloud storage.
+        </p>
+        <Link className="btn btn-primary" to="/signup">Try it now →</Link>
+      </div>
+      <img
+        className="showcase-img"
+        alt="developer workspace"
+        src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900&q=70"
+      />
+    </section>
+
     <section className="how-section">
       <h2 className="section-heading">How it works</h2>
       <div className="how-grid">
         {[["1","Create your account","Sign up in seconds — your profile, avatar and contribution heat-map are ready instantly."],
           ["2","Push your code","Upload files or whole folders from the browser, or commit from the terminal CLI — everything lands in B2 cloud storage."],
-          ["3","Ship with confidence","Every commit gets a diff, a GO/REVIEW/BLOCK risk verdict, and an on-demand AI code review before you merge."]].map(([n,t,d]) => (
+          ["3","Ship with confidence","Every commit gets a diff, a GO/REVIEW/BLOCK risk verdict, and an on-demand AI code review before you merge."]].map(([n,t,d], i) => (
           <div key={n} className="card how-card">
+            <img
+              className="how-img"
+              alt=""
+              src={[
+                "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=70",
+                "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=70",
+                "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=600&q=70",
+              ][i]}
+            />
             <span className="how-num">{n}</span>
             <h3>{t}</h3>
             <p className="text-muted">{d}</p>

@@ -79,7 +79,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #35261a;
+  background: #2a1c10;
   border-radius: 22px;
   box-shadow: 0 10px 30px rgba(40, 28, 16, 0.4);
   animation: riseIn 0.5s ease both;
@@ -110,7 +110,7 @@ body { padding-bottom: 90px; }
 
 /* header warmed to match the reference */
 .gh-navbar {
-  background-color: #35261a;
+  background-color: #2a1c10;
   border-bottom: 1px solid #4a3423;
   box-shadow: 0 2px 14px rgba(40, 28, 16, 0.35);
 }
