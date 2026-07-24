@@ -17,19 +17,71 @@ hardcoded.
 
 ---
 
-## Screenshots
+## Screenshots (real running app)
 
-### Dashboard — left sidebar, risk-gate activity feed, platform toolbox
+**1 — Dashboard.** Left sidebar nav (Dashboard/Explore/Issues/Stars/Profile),
+white stat tiles, the **live cross-repo Risk-Gate activity feed** (see the 🚫 60
+BLOCK next to green GOs), and the **Platform toolbox** listing every feature.
 ![Dashboard](docs/screenshots/01-dashboard.jpg)
 
-### Repository — segmented tabs (Code · Commits · Issues · Health · Graph · Settings) + About panel
+**2 — Repository page.** Segmented pill tabs (**Code · Commits · Issues · Health
+· Graph · Settings**), the file browser, branch/merge controls, and the **About**
+side panel with stars/branches/commits/issues/files and language dots.
 ![Repository](docs/screenshots/02-repo-code.jpg)
 
-### Health Audit — grade, risk-gate verdicts, languages, risky files (LORE-style)
+**3 — Health Audit (LORE).** Grade + score, real **risk-gate verdict** bars
+(1 GO / 0 REVIEW / 1 BLOCK), commits audited, average risk score, and language
+breakdown — all computed from this repo's real commits.
 ![Health audit](docs/screenshots/03-health-audit.jpg)
 
-### Carbon footprint · Security inventory · Onboarding briefing
+**4 — Carbon (GreenPipe) · Security Inventory (LORE) · Onboarding (LORE).**
+Real SCI carbon estimate with greenest-region routing, secret scan, files with
+risky history, commit-activity sparkline, and the AI onboarding-briefing button.
 ![Carbon, security, onboarding](docs/screenshots/04-carbon-security-onboarding.jpg)
+
+**5 — Graph (GraphDev) + Data Smith (Time-Traveler).** Dependency graph + BFS
+ripple + circular-import detection (powered by the **real Python tree-sitter
+engine**), and the AI seed-data generator that reads your schema.
+![Graph and Data Smith](docs/screenshots/05-graph-datasmith.jpg)
+
+**6 — Explore.** Search and browse every public repository; clickable owner
+names link to public profiles.
+![Explore](docs/screenshots/06-explore.jpg)
+
+**7 — Profile.** Achievements (earned/locked with hints), personal **Risk-gate
+record** chips, followers/following, and the green contribution heatmap.
+![Profile](docs/screenshots/07-profile.jpg)
+
+**8 — Issues (cross-repo).** Open/Closed segmented tabs listing issues across all
+your repositories — including the auto-remediation issues the risk gate opens.
+![Issues](docs/screenshots/08-issues.jpg)
+
+> The Commits tab additionally shows, per commit: the **GO/REVIEW/BLOCK verdict
+> chip**, the **🌱 carbon chip**, the **↩️ Revert** button, the expandable
+> **risk-gate evidence panel** (Launch Control), and the **AI Review** and
+> **Pre-mortem** buttons (LORE). The Settings tab has visibility toggle + delete.
+
+---
+
+## Real Python + tree-sitter engine (Docker)
+
+The **GraphDev engine** in `graphdev-engine/` is a genuine FastAPI + tree-sitter
+microservice — GraphDev's actual parser stack — not a JS reimplementation.
+
+```bash
+# option A: Docker
+docker compose up graphdev-engine        # serves on :8900
+
+# option B: run directly
+cd graphdev-engine
+pip install -r requirements.txt
+uvicorn engine:app --port 8900
+```
+
+The Node backend calls it at `GRAPHDEV_ENGINE_URL` (default
+`http://127.0.0.1:8900`) and falls back to its built-in JS parser if the service
+is down. Verified: tree-sitter extracts real code units
+(`add`→arrow, `mul`→function) and dependency edges from actual JS/TS.
 
 ---
 
