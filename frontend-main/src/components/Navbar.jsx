@@ -1,11 +1,12 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../authContext";
 import logo from "../assets/github-mark-white.svg";
 import "./navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { setCurrentUser } = useAuth();
 
   const handleLogout = () => {
@@ -16,6 +17,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <nav className="gh-navbar">
       <Link to="/" className="gh-navbar-brand">
         <img src={logo} alt="GitHub logo" />
@@ -40,6 +42,26 @@ const Navbar = () => {
         </button>
       </div>
     </nav>
+
+      {/* Fireart-style dark olive bottom dock */}
+      <nav className="bottom-dock">
+        <Link to="/" className={`dock-item ${location.pathname === "/" ? "active" : ""}`}>
+          <span className="dock-icon">🏠</span>
+          {location.pathname === "/" && <span>Home</span>}
+        </Link>
+        <Link to="/create" className={`dock-item ${location.pathname === "/create" ? "active" : ""}`}>
+          <span className="dock-icon">➕</span>
+          {location.pathname === "/create" && <span>New</span>}
+        </Link>
+        <Link to="/profile" className={`dock-item ${location.pathname === "/profile" ? "active" : ""}`}>
+          <span className="dock-icon">👤</span>
+          {location.pathname === "/profile" && <span>Profile</span>}
+        </Link>
+        <button className="dock-item" onClick={handleLogout}>
+          <span className="dock-icon">🚪</span>
+        </button>
+      </nav>
+    </>
   );
 };
 

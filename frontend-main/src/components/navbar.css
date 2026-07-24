@@ -67,3 +67,50 @@
     padding: 10px 16px;
   }
 }
+
+/* ---- Fireart-style bottom dock (dark olive, not black) ---- */
+.bottom-dock {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #3a4632;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(40, 46, 30, 0.35);
+  animation: riseIn 0.5s ease both;
+}
+.dock-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 16px;
+  color: #cfd6c4;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.dock-item:hover { transform: translateY(-2px); text-decoration: none; color: #fff; }
+.dock-item.active {
+  background: #55663f;
+  color: #ffffff;
+}
+.dock-item.active .dock-icon { filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.6)); }
+.dock-icon { font-size: 16px; }
+body { padding-bottom: 90px; }
+
+/* header warmed to match the reference */
+.gh-navbar {
+  background-color: rgba(247, 245, 241, 0.9);
+  border-bottom: 1px solid #e6e2d8;
+  box-shadow: none;
+}
