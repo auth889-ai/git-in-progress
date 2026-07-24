@@ -43,6 +43,9 @@ reproduced below. Local reference clones live in `../winner-reference/`.
   edges into a dependency graph, then BFS-ripple from changed files to find
   everything indirectly affected ("from blind diffs to structural
   understanding"). See `backend-main/services/depGraph.js` and the repo Graph tab.
+- Also: **circular-dependency detection** is ported **verbatim** from LORE's
+  `lore-cli/lore_cli/validate.py::_detect_cycles` (DFS with a recursion stack),
+  translated Python→JS and run over the import graph to catch circular imports.
 
 ## GreenPipe (Green Agent Prize)
 

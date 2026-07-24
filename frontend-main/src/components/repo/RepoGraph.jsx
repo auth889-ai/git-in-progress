@@ -66,6 +66,17 @@ const RepoGraph = ({ repoId }) => {
         </div>
       </div>
 
+      {graph.cycles?.length > 0 && (
+        <div className="flash-error" style={{ marginBottom: 16 }}>
+          <b>⚠️ {graph.cycles.length} circular import{graph.cycles.length === 1 ? "" : "s"} detected</b>
+          <ul style={{ margin: "6px 0 0", paddingLeft: 18 }}>
+            {graph.cycles.map((cyc, i) => (
+              <li key={i}>{cyc.join(" → ")}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="health-grid">
         <div className="card">
           <h3>🎯 Impact analysis</h3>

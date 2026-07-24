@@ -23,13 +23,13 @@ function buildGraph(files) {
   );
   for (const f of textFiles) byBase.set(f.path.replace(/\.(js|jsx|ts|tsx|mjs|cjs)$/, ""), f.path);
 
-  const importRe = /(?:import\s[^'"\n]*from\s*['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\))/g;
+  const importRe = /(?:import\s[^'"\n]*from\s*['"]([^'"]+)['"]|import\s*['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)|import\(\s*['"]([^'"]+)['"]\s*\)|export\s[^'"\n]*from\s*['"]([^'"]+)['"])/g;
   const edges = [];
   for (const f of textFiles) {
     const content = f.content || "";
     let m;
     while ((m = importRe.exec(content))) {
-      const spec = m[1] || m[2] || m[3];
+      const spec = m[1] || m[2] || m[3] || m[4] || m[5];
       const base = resolveImport(f.path, spec);
       if (!base) continue;
       const target =
@@ -65,4 +65,59 @@ function rippleImpact(graph, changedPaths, maxDepth = 2) {
   return [...impacted.entries()].map(([path, depth]) => ({ path, depth }));
 }
 
-module.exports = { buildGraph, rippleImpact };
+// Circular-dependency detection via DFS — ported verbatim from LORE's
+// lore-cli/lore_cli/validate.py::_detect_cycles (MIT License, Copyright (c)
+// 2026 LORE Contributors, see ACKNOWLEDGMENTS.md). LORE runs it over its
+// decision-dependency graph; we run it over the import graph to catch
+// circular imports (a real architectural smell).
+function detectCycles(graph) {
+  // Build depends_map: node -> set(imported nodes)
+  const dependsMap = new Map();
+  const idSet = new Set(graph.nodes);
+  for (const e of graph.edges) {
+    if (!dependsMap.has(e.from)) dependsMap.set(e.from, new Set());
+    dependsMap.get(e.from).add(e.to);
+  }
+
+  const visited = new Set();
+  const recStack = new Set();
+  const cycles = [];
+  const path = [];
+
+  function dfs(node) {
+    visited.add(node);
+    recStack.add(node);
+    path.push(node);
+
+    for (const neighbor of dependsMap.get(node) || []) {
+      if (!idSet.has(neighbor)) continue;
+      if (!visited.has(neighbor)) {
+        dfs(neighbor);
+      } else if (recStack.has(neighbor)) {
+        // Extract the cycle from path.
+        const idx = path.indexOf(neighbor);
+        cycles.push([...path.slice(idx), neighbor]);
+      }
+    }
+
+    path.pop();
+    recStack.delete(node);
+  }
+
+  for (const node of [...idSet].sort()) {
+    if (!visited.has(node)) dfs(node);
+  }
+
+  // De-duplicate cycles that are rotations of each other
+  const seen = new Set();
+  const unique = [];
+  for (const cyc of cycles) {
+    const key = [...cyc].sort().join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(cyc);
+  }
+  return unique;
+}
+
+module.exports = { buildGraph, rippleImpact, detectCycles };

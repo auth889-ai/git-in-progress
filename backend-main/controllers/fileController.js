@@ -5,7 +5,7 @@ const Repository = require("../models/repoModel");
 const Issue = require("../models/issueModel");
 const { reviewDiff, onboardingBriefing } = require("../services/aiReviewer");
 const { computeFullRisk, repoMemoryNotes, scanSecrets } = require("../services/riskEngine");
-const { buildGraph, rippleImpact } = require("../services/depGraph");
+const { buildGraph, rippleImpact, detectCycles } = require("../services/depGraph");
 const { commitCarbon, repoCarbon } = require("../services/carbon");
 const { b2Configured, b2Upload, b2Download, b2Delete } = require("../config/storage");
 
@@ -587,7 +587,8 @@ async function getRepoGraph(req, res) {
     for (const e of graph.edges) inDeg[e.to] = (inDeg[e.to] || 0) + 1;
     const hubs = Object.entries(inDeg).sort((a, b) => b[1] - a[1]).slice(0, 5)
       .map(([path, count]) => ({ path, count }));
-    res.json({ nodeCount: graph.nodes.length, edgeCount: graph.edges.length, nodes: graph.nodes, edges: graph.edges, hubs, impact });
+    const cycles = detectCycles(graph);
+    res.json({ nodeCount: graph.nodes.length, edgeCount: graph.edges.length, nodes: graph.nodes, edges: graph.edges, hubs, impact, cycles });
   } catch (err) {
     console.error("Error building graph : ", err.message);
     res.status(500).send("Server error");
