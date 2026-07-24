@@ -3,11 +3,11 @@ import HeatMap from "@uiw/react-heat-map";
 
 // Violet contribution scale to match the premium light theme
 const PANEL_COLORS = {
-  0: "#1b2540",
-  1: "#312e81",
-  3: "#4f46e5",
-  6: "#06b6d4",
-  10: "#67e8f9",
+  0: "#eef0f6",
+  1: "#ddd6fe",
+  3: "#a78bfa",
+  6: "#8b5cf6",
+  10: "#6d28d9",
 };
 
 // Aggregate raw ISO timestamps into { date, count } per day

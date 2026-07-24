@@ -85,6 +85,11 @@ const Dashboard = () => {
         </aside>
 
         <main className="dashboard-main">
+          <div className="stat-cards">
+            <div className="card stat-card"><span className="stat-num">{repositories.length}</span><span className="stat-label">📁 Your repositories</span></div>
+            <div className="card stat-card"><span className="stat-num">{allRepositories.length}</span><span className="stat-label">🌐 Public repositories</span></div>
+            <div className="card stat-card"><span className="stat-num">{allRepositories.reduce((a, r) => a + (r.issues?.length || 0), 0)}</span><span className="stat-label">🐛 Total issues</span></div>
+          </div>
           <h2>Explore repositories</h2>
           {loading ? (
             <p className="spinner-note">Loading repositories…</p>

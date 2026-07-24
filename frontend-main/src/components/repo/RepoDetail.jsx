@@ -11,7 +11,7 @@ import {
 } from "../Icons";
 import { API_URL } from "../../config";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "./repo.css";
 
 const EXT_LANG = {
@@ -695,7 +695,7 @@ const RepoDetail = () => {
               ) : (
                 <SyntaxHighlighter
                   language={languageFor(openFile.path)}
-                  style={oneDark}
+                  style={oneLight}
                   showLineNumbers
                   customStyle={{ margin: 0, fontSize: 13.5, maxHeight: "72vh" }}
                 >

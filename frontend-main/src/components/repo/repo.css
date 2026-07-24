@@ -660,6 +660,6 @@
   cursor: help;
   animation: riseIn 0.4s ease both;
 }
-.risk-go { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.4); }
-.risk-review { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.4); }
-.risk-block { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.45); }
+.risk-go { background: rgba(16,185,129,.12); color: #047857; border: 1px solid rgba(16,185,129,.4); }
+.risk-review { background: rgba(245,158,11,.14); color: #b45309; border: 1px solid rgba(245,158,11,.4); }
+.risk-block { background: rgba(239,68,68,.12); color: #b91c1c; border: 1px solid rgba(239,68,68,.45); }
