@@ -88,9 +88,58 @@ async function reviewWithGemini(diffText, commitMessage) {
   return { ...JSON.parse(text), provider: "gemini" };
 }
 
+// Fallback provider: OpenRouter (OpenAI-compatible gateway, free models available)
+const OPENROUTER_FREE_MODELS = [
+  "cohere/north-mini-code:free",
+  "poolside/laguna-s-2.1:free",
+  "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+  "google/gemma-4-31b-it:free",
+  "inclusionai/ling-3.0-flash:free",
+];
+
+async function reviewWithOpenRouter(diffText, commitMessage, model) {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "user",
+          content:
+            buildPrompt(diffText, commitMessage) +
+            '\n\nRespond ONLY with a JSON object: {"summary": string, "riskScore": integer 1-10, "issues": string[], "suggestions": string[]}. No markdown, no prose.',
+        },
+      ],
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`OpenRouter error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  }
+  const data = await res.json();
+  let text = data.choices?.[0]?.message?.content || "";
+  text = text.replace(/```json|```/g, "").trim();
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("OpenRouter returned no JSON.");
+  return { ...JSON.parse(text.slice(start, end + 1)), provider: `openrouter/${model.split(":")[0]}` };
+}
+
 async function reviewDiff(diffText, commitMessage) {
   if (process.env.ANTHROPIC_API_KEY) {
     return reviewWithClaude(diffText, commitMessage);
+  }
+  if (process.env.OPENROUTER_API_KEY) {
+    for (const model of OPENROUTER_FREE_MODELS) {
+      try {
+        return await reviewWithOpenRouter(diffText, commitMessage, model);
+      } catch (err) {
+        console.error(`OpenRouter ${model} failed:`, err.message);
+      }
+    }
   }
   if (process.env.GEMINI_API_KEY) {
     return reviewWithGemini(diffText, commitMessage);
