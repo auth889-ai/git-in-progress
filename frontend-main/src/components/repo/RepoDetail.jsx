@@ -448,6 +448,17 @@ const RepoDetail = () => {
   const openIssues = issues.filter((i) => i.status === "open");
   const closedIssues = issues.filter((i) => i.status !== "open");
 
+  // language mix for the About panel
+  const langBytes = {};
+  for (const f of files) {
+    const ext = fileExt(f.path);
+    if (!ext) continue;
+    langBytes[ext] = (langBytes[ext] || 0) + (f.size || 1);
+  }
+  const topLangs = Object.entries(langBytes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
   return (
     <>
       <Navbar />
@@ -543,6 +554,8 @@ const RepoDetail = () => {
           </div>
         </div>
 
+        <div className="repo-body">
+        <div className="repo-body-main">
         {(activeTab === "code" || activeTab === "commits") && (
           <div className="branch-bar">
             <select
@@ -899,6 +912,32 @@ const RepoDetail = () => {
             </div>
           </div>
         )}
+        </div>
+
+        <aside className="repo-about">
+          <h3>About</h3>
+          {repo.description ? (
+            <p className="repo-about-desc">{repo.description}</p>
+          ) : (
+            <p className="repo-about-desc">No description provided.</p>
+          )}
+          <div className="repo-about-row">⭐ <b>{star.starCount}</b> stars</div>
+          <div className="repo-about-row">🌿 <b>{branches.length}</b> branch{branches.length === 1 ? "" : "es"}</div>
+          <div className="repo-about-row">🔵 <b>{commits.length}</b> commit{commits.length === 1 ? "" : "s"}</div>
+          <div className="repo-about-row">🐛 <b>{openIssues.length}</b> open issue{openIssues.length === 1 ? "" : "s"}</div>
+          <div className="repo-about-row">📄 <b>{files.length}</b> file{files.length === 1 ? "" : "s"}</div>
+          {topLangs.length > 0 && (
+            <div className="repo-about-langs">
+              {topLangs.map(([ext]) => (
+                <span key={ext} className="lang-chip">
+                  <span className="lang-dot" style={{ background: colorFor(`x.${ext}`) }} />
+                  {ext}
+                </span>
+              ))}
+            </div>
+          )}
+        </aside>
+        </div>
       </div>
     </>
   );
