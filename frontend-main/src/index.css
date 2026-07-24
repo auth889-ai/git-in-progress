@@ -1,19 +1,19 @@
 /* ---- Premium light design system (indigo/violet) ---- */
 :root {
-  --color-canvas: #f6f7fb;
-  --color-canvas-subtle: #f8f9fe;
-  --color-canvas-inset: #ffffff;
-  --color-border: #dde1ee;
-  --color-border-muted: #eef0f6;
-  --color-text: #0f172a;
-  --color-text-muted: #52607a;
-  --color-accent: #4f46e5;
+  --color-canvas: #0b1120;
+  --color-canvas-subtle: #101830;
+  --color-canvas-inset: #0d1425;
+  --color-border: #24304d;
+  --color-border-muted: #1b2540;
+  --color-text: #e2e8f5;
+  --color-text-muted: #94a3c8;
+  --color-accent: #7dd3fc;
   --color-primary: #6366f1;
   --color-primary-deep: #4f46e5;
   --color-success: #10b981;
   --color-danger: #dc2626;
   --color-danger-btn: #ef4444;
-  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --gradient-primary: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
   --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.08), 0 6px 20px rgba(99, 102, 241, 0.10);
   --shadow-card-hover: 0 2px 4px rgba(16, 24, 40, 0.08), 0 8px 24px rgba(99, 102, 241, 0.12);
   --radius: 10px;
@@ -22,7 +22,7 @@
     Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-size: 14px;
-  color-scheme: light;
+  color-scheme: dark;
   color: var(--color-text);
   background-color: var(--color-canvas);
   text-rendering: optimizeLegibility;
@@ -41,10 +41,10 @@ body {
   background-color: var(--color-canvas);
   background-image: radial-gradient(
       at 0% 0%,
-      rgba(99, 102, 241, 0.06) 0,
+      rgba(79, 70, 229, 0.14) 0,
       transparent 50%
     ),
-    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.06) 0, transparent 50%);
+    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.10) 0, transparent 50%);
   background-repeat: no-repeat;
 }
 
@@ -59,7 +59,7 @@ a:hover {
 h1, h2, h3, h4 {
   margin: 0;
   font-weight: 700;
-  color: #0f172a;
+  color: #f1f5ff;
   letter-spacing: -0.01em;
 }
 
@@ -218,3 +218,38 @@ p {
   text-align: center;
   color: var(--color-text-muted);
 }
+
+
+/* ===== Deep-navy premium overrides (win over component css via body prefix) ===== */
+body .btn { background-color: #16203a; color: #e2e8f5; border-color: #2a3a5e; box-shadow: none; }
+body .btn:hover { background-color: #1d2a4a; border-color: #3b4d78; }
+body .btn-primary { background: var(--gradient-primary); color: #ffffff; border: none; box-shadow: 0 2px 12px rgba(6, 182, 212, 0.35); }
+body .btn-primary:hover { background: linear-gradient(135deg, #5b52f0 0%, #0ea5c9 100%); }
+body .btn-danger { background-color: #16203a; color: #f87171; }
+body .btn-danger:hover { background-color: #dc2626; color: #ffffff; border-color: #dc2626; }
+body .card, body .file-list, body .issue-list { background-color: #101830; }
+body .form-input, body .form-textarea, body .input { background-color: #0b1120; color: #e2e8f5; border-color: #24304d; }
+body .form-input:focus, body .form-textarea:focus, body .input:focus { border-color: #06b6d4; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
+body .badge { color: #7dd3fc; background-color: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.35); }
+body .flash-error { color: #fca5a5; background-color: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); }
+body .gh-navbar { background-color: rgba(11, 17, 32, 0.88); }
+body .file-table-header { background: linear-gradient(135deg, rgba(79, 70, 229, 0.18), rgba(6, 182, 212, 0.12)); }
+body .file-row:hover { background: rgba(6, 182, 212, 0.07); }
+body .file-link { color: #e2e8f5; }
+body .file-link:hover { color: #7dd3fc; }
+body .commit-diff { background-color: #0d1425; }
+body .commit-diff-header { background-color: #101830; }
+body .diff-line.diff-add { background: rgba(34, 197, 94, 0.14); color: #86efac; }
+body .diff-line.diff-del { background: rgba(239, 68, 68, 0.14); color: #fca5a5; }
+body .diff-line.diff-hunk { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; }
+body .danger-zone { background-color: #101830; }
+body .pending-file { background-color: #0b1120; }
+body .visibility-option.selected { border-color: #06b6d4; background-color: rgba(6, 182, 212, 0.07); }
+body .ai-review-card { background: linear-gradient(135deg, rgba(79, 70, 229, 0.10), rgba(6, 182, 212, 0.08)); border-color: rgba(6, 182, 212, 0.35); }
+body .login-box, body .pass-box { background-color: #101830; border-color: #24304d; }
+body .image-preview { background: repeating-conic-gradient(#141c33 0% 25%, #0b1120 0% 50%) 0 0 / 20px 20px; }
+body .repo-tab.active { color: #7dd3fc; border-bottom-color: #06b6d4; }
+body .stat-link b, body .file-table-commits-link { color: #e2e8f5; }
+body .stat-link:hover, body .file-table-commits-link:hover { color: #7dd3fc; }
+body .dashboard-repo-item { color: #e2e8f5; }
+body .dashboard-repo-item:hover { color: #7dd3fc; }
