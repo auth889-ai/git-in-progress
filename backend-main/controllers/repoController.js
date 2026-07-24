@@ -10,6 +10,9 @@ function requesterId(req) {
   } catch { return null; }
 }
 const Repository = require("../models/repoModel");
+const File = require("../models/fileModel");
+const Commit = require("../models/commitModel");
+const Issue = require("../models/issueModel");
 // Register referenced models so .populate("owner", "username email") / .populate("issues") work
 const User = require("../models/userModel");
 require("../models/issueModel");
@@ -177,6 +180,14 @@ async function deleteRepositoryById(req, res) {
     if (!repository) {
       return res.status(404).json({ error: "Repository not found!" });
     }
+
+    // Cascade: remove everything that belonged to this repository so no
+    // orphan commits/files/issues keep dead links alive in feeds and pages
+    await Promise.all([
+      File.deleteMany({ repository: id }),
+      Commit.deleteMany({ repository: id }),
+      Issue.deleteMany({ repository: id }),
+    ]);
 
     res.json({ message: "Repository deleted successfully!" });
   } catch (err) {

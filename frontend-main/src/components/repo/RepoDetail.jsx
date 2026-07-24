@@ -426,7 +426,12 @@ const RepoDetail = () => {
       <>
         <Navbar />
         <div className="repo-page">
-          <div className="flash-error">{error || "Repository not found."}</div>
+          <div className="flash-error">
+            {error || "Repository not found."} It may have been deleted.
+          </div>
+          <Link to="/" className="btn btn-primary" style={{ marginTop: 12 }}>
+            ← Back to dashboard
+          </Link>
         </div>
       </>
     );
