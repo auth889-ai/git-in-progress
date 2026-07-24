@@ -28,6 +28,12 @@ const FileSchema = new Schema(
       type: Number,
       default: 0,
     },
+    // "utf8" for text, "base64" for binary files (images, pdfs, …)
+    encoding: {
+      type: String,
+      enum: ["utf8", "base64"],
+      default: "utf8",
+    },
     // "db" = content stored in this document; "b2" = content lives in Backblaze B2
     storage: {
       type: String,

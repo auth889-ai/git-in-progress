@@ -528,3 +528,17 @@
 .file-page-bar .file-meta {
   margin-left: auto;
 }
+
+.image-preview {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  background:
+    repeating-conic-gradient(#f1f3f9 0% 25%, #ffffff 0% 50%) 0 0 / 20px 20px;
+}
+.image-preview img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(16, 24, 40, 0.15);
+}

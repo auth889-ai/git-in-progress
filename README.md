@@ -5,20 +5,6 @@ A full-stack GitHub clone with a **premium light UI** (indigo/violet design syst
 - **`backend-main/`** — Node.js + Express + MongoDB REST API with Socket.io, JWT authentication, and a **git-like CLI** (`init`, `add`, `commit`, `push`, `pull`, `revert`) that stores commits in **Backblaze B2** (S3-compatible) with automatic fallback to MongoDB GridFS.
 - **`frontend-main/`** — React (Vite) single-page app: signup/login, dashboard, create-repository flow, repository pages with a full issue tracker, and a profile page with a **real contribution heat-map**.
 
-## Screenshots
-
-| Dashboard | Create a repository |
-| --------- | ------------------- |
-| ![Dashboard](docs/screenshots/dashboard.jpg) | ![Create repository](docs/screenshots/create-repo.jpg) |
-
-| Repository (tabs, star, upload) | Profile with real heat-map |
-| ------------------- | -------------------------- |
-| ![Repository](docs/screenshots/repository.jpg) | ![Profile](docs/screenshots/profile.jpg) |
-
-| File browser & code viewer |
-| -------------------------- |
-| ![Code viewer](docs/screenshots/code-viewer.jpg) |
-
 ## Features
 
 - 🔐 User signup / login with JWT auth (7-day tokens) and bcrypt password hashing — **all write endpoints are protected**; expired sessions auto-redirect to login

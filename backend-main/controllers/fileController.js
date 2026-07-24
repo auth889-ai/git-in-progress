@@ -73,6 +73,7 @@ async function uploadFiles(req, res) {
       }
 
       const cleanPath = file.path.replace(/^\/+/, "").replace(/\.\./g, "");
+      const encoding = file.encoding === "base64" ? "base64" : "utf8";
 
       // Prefer B2 for storage (GitHub-style object storage); fall back to MongoDB
       let storage = "db";
@@ -94,15 +95,17 @@ async function uploadFiles(req, res) {
 
       const existing = await File.findOneAndUpdate(
         { repository: id, branch, path: cleanPath },
-        { content: inlineContent, size: file.content.length, storage },
+        { content: inlineContent, size: file.content.length, storage, encoding },
         { upsert: true, new: false }
       );
 
-      // Diffs only make sense for content we can read inline
+      // Diffs only make sense for inline text content
       const oldContent =
-        existing?.storage === "b2" ? null : existing?.content;
+        existing?.storage === "b2" || existing?.encoding === "base64"
+          ? null
+          : existing?.content;
       const diffInfo =
-        file.content.length <= 512 * 1024 && oldContent !== null
+        encoding === "utf8" && file.content.length <= 512 * 1024 && oldContent !== null
           ? makePatch(cleanPath, oldContent, file.content)
           : { patch: "", additions: 0, deletions: 0 };
       changes.push({
@@ -133,7 +136,7 @@ async function listFiles(req, res) {
   const branch = (req.query.branch || "main").trim();
   try {
     const files = await File.find({ repository: id, branch })
-      .select("path size updatedAt branch storage")
+      .select("path size updatedAt branch storage encoding")
       .sort({ path: 1 });
     res.json(files);
   } catch (err) {

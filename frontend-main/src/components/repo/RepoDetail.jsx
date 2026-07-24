@@ -52,6 +52,19 @@ const riskColor = (score) =>
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
+const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "ico", "bmp"];
+const BINARY_EXTS = [...IMAGE_EXTS, "pdf", "zip", "gz", "tar", "mp3", "mp4", "mov", "woff", "woff2", "ttf", "eot", "exe", "bin"];
+
+const fileExt = (path) => (path || "").split(".").pop().toLowerCase();
+const isImagePath = (path) => IMAGE_EXTS.includes(fileExt(path));
+const isBinaryPath = (path) => BINARY_EXTS.includes(fileExt(path));
+const mimeFor = (path) => {
+  const ext = fileExt(path);
+  if (ext === "svg") return "image/svg+xml";
+  if (ext === "jpg") return "image/jpeg";
+  return `image/${ext}`;
+};
+
 const FileIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914Z" />
@@ -288,12 +301,19 @@ const RepoDetail = () => {
     let loaded = [];
     let remaining = picked.length;
     picked.forEach((f) => {
+      const path = f.webkitRelativePath || f.name;
+      const binary = isBinaryPath(path);
       const reader = new FileReader();
       reader.onload = () => {
-        loaded.push({
-          path: f.webkitRelativePath || f.name,
-          content: String(reader.result),
-        });
+        loaded.push(
+          binary
+            ? {
+                path,
+                content: String(reader.result).split(",")[1] || "",
+                encoding: "base64",
+              }
+            : { path, content: String(reader.result) }
+        );
         remaining -= 1;
         if (remaining === 0) {
           setPendingFiles((prev) => {
@@ -311,7 +331,8 @@ const RepoDetail = () => {
         remaining -= 1;
         setUploadError(`Could not read "${f.name}".`);
       };
-      reader.readAsText(f);
+      if (binary) reader.readAsDataURL(f);
+      else reader.readAsText(f);
     });
   };
 
@@ -599,14 +620,28 @@ const RepoDetail = () => {
               </span>
             </div>
             <div className="code-viewer card">
-              <SyntaxHighlighter
-                language={languageFor(openFile.path)}
-                style={oneLight}
-                showLineNumbers
-                customStyle={{ margin: 0, fontSize: 13.5, maxHeight: "72vh" }}
-              >
-                {openFile.content || "(empty file)"}
-              </SyntaxHighlighter>
+              {openFile.encoding === "base64" && isImagePath(openFile.path) ? (
+                <div className="image-preview">
+                  <img
+                    src={`data:${mimeFor(openFile.path)};base64,${openFile.content}`}
+                    alt={openFile.path}
+                  />
+                </div>
+              ) : openFile.encoding === "base64" ? (
+                <p className="spinner-note">
+                  Binary file ({((openFile.size || 0) / 1024).toFixed(1)} KB) — preview not
+                  available.
+                </p>
+              ) : (
+                <SyntaxHighlighter
+                  language={languageFor(openFile.path)}
+                  style={oneLight}
+                  showLineNumbers
+                  customStyle={{ margin: 0, fontSize: 13.5, maxHeight: "72vh" }}
+                >
+                  {openFile.content || "(empty file)"}
+                </SyntaxHighlighter>
+              )}
             </div>
           </div>
         )}
@@ -851,6 +886,13 @@ const RepoDetail = () => {
                         </div>
                       )}
 
+                      {isOpen &&
+                        !(commit.changes || []).some((c) => c.patch) && (
+                          <p className="spinner-note">
+                            No diff stored for this commit (binary files, or created
+                            before diff support was added).
+                          </p>
+                        )}
                       {isOpen &&
                         (commit.changes || []).map(
                           (c) =>
