@@ -273,6 +273,7 @@ async function listRecentCommits(req, res) {
         repository: c.repository,
         repoName: nameById.get(String(c.repository)) || "unknown",
         author: c.author?.username || "unknown",
+        authorId: c.author?._id,
         verdict: c.policyRisk?.verdict,
         score: c.policyRisk?.score,
       }))

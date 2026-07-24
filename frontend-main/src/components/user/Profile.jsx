@@ -1,15 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import HeatMapProfile from "./HeatMap";
 import Achievements from "./Achievements";
 import GettingStarted, { GateRecord } from "./GettingStarted";
+import FollowButton from "./FollowButton";
 import { RepoIcon, LockIcon, timeAgo } from "../Icons";
 import { API_URL } from "../../config";
 import "./profile.css";
 
 const Profile = () => {
+  const { userId: routeUserId } = useParams();
+  const myId = localStorage.getItem("userId");
+  const viewedId = routeUserId || myId;
+  const isOwnProfile = String(viewedId) === String(myId);
   const [userDetails, setUserDetails] = useState(null);
   const [repositories, setRepositories] = useState([]);
   const [commits, setCommits] = useState([]);
@@ -46,7 +51,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
+    const userId = viewedId;
     if (!userId) return;
 
     const fetchData = async () => {
@@ -79,7 +84,7 @@ const Profile = () => {
     };
 
     fetchData();
-  }, []);
+  }, [viewedId]);
 
   // Real activity: repository creations and every commit count as contributions
   const contributionTimestamps = [
@@ -108,17 +113,21 @@ const Profile = () => {
               {(userDetails?.username || "?").charAt(0).toUpperCase()}
             </div>
           )}
-          <input
-            ref={avatarInputRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={handleAvatarPick}
-          />
-          <button className="btn" onClick={() => avatarInputRef.current?.click()}>
-            {userDetails?.avatar ? "Change photo" : "Upload photo"}
-          </button>
-          {avatarError && <p className="flash-error" style={{ margin: 0 }}>{avatarError}</p>}
+          {isOwnProfile && (
+            <>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleAvatarPick}
+              />
+              <button className="btn" onClick={() => avatarInputRef.current?.click()}>
+                {userDetails?.avatar ? "Change photo" : "Upload photo"}
+              </button>
+              {avatarError && <p className="flash-error" style={{ margin: 0 }}>{avatarError}</p>}
+            </>
+          )}
           <div>
             <h2 className="profile-username">
               {userDetails?.username || "Unknown user"}
@@ -127,6 +136,12 @@ const Profile = () => {
               <p className="profile-email">{userDetails.email}</p>
             )}
           </div>
+          {!isOwnProfile && (
+            <FollowButton
+              targetId={viewedId}
+              targetName={userDetails?.username || "user"}
+            />
+          )}
           <div className="profile-stats">
             <button className="stat-link" onClick={() => document.getElementById("repos-section")?.scrollIntoView({ behavior: "smooth" })}>
               <b>{repositories.length}</b> repositor
@@ -153,11 +168,13 @@ const Profile = () => {
         </aside>
 
         <main className="profile-main">
-          <GettingStarted
-            repositories={repositories}
-            commits={commits}
-            starred={starred}
-          />
+          {isOwnProfile && (
+            <GettingStarted
+              repositories={repositories}
+              commits={commits}
+              starred={starred}
+            />
+          )}
 
           <Achievements
             repositories={repositories}

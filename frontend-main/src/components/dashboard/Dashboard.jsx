@@ -111,10 +111,11 @@ const Dashboard = () => {
                 <div key={repo._id} className="card">
                   <div className="repo-card-title">
                     <RepoIcon />
-                    <Link to={`/repository/${repo._id}`}>
-                      {repo.owner?.username ? `${repo.owner.username} / ` : ""}
-                      {repo.name}
-                    </Link>
+                    {repo.owner?._id && (
+                      <Link to={`/user/${repo.owner._id}`}>{repo.owner.username}</Link>
+                    )}
+                    {repo.owner?.username ? " / " : ""}
+                    <Link to={`/repository/${repo._id}`}>{repo.name}</Link>
                     <span className="badge">
                       {repo.visibility === false ? "Private" : "Public"}
                     </span>

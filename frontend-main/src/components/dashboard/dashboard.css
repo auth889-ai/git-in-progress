@@ -155,7 +155,7 @@
 .toolbox-desc { color: #b1bac4; font-size: 12px; margin-top: 1px; }
 
 /* ---- risk gate activity feed ---- */
-.gate-feed { padding: 6px 0; margin-bottom: 24px; }
+.gate-feed { padding: 6px 0; margin-bottom: 24px; max-height: 380px; overflow-y: auto; }
 .gate-feed-row {
   display: grid;
   grid-template-columns: 84px 1fr auto;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../Navbar";
 import {
@@ -457,7 +457,11 @@ const RepoDetail = () => {
             <RepoIcon size={18} />
             <h1>
               <span className="repo-owner">
-                {repo.owner?.username || "unknown"}
+                {repo.owner?._id ? (
+                  <Link to={`/user/${repo.owner._id}`}>{repo.owner.username}</Link>
+                ) : (
+                  repo.owner?.username || "unknown"
+                )}
               </span>
               <FollowButton
                 targetId={repo.owner?._id || repo.owner}

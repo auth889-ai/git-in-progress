@@ -188,3 +188,6 @@
 .gs-step:hover { background: #eff2f5; text-decoration: none; }
 .gs-step.done { color: var(--color-text-muted); font-weight: 500; }
 .gs-go { margin-left: auto; color: #0969da; }
+
+/* GitHub-style full-width follow button on profile */
+.profile-sidebar .follow-btn { width: 100%; justify-content: center; padding: 6px 12px; font-size: 14px; }

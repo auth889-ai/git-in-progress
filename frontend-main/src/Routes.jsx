@@ -42,6 +42,7 @@ const ProjectRoutes = () => {
     { path: "/auth", element: <Login /> },
     { path: "/signup", element: <Signup /> },
     { path: "/profile", element: <Profile /> },
+    { path: "/user/:userId", element: <Profile /> },
     { path: "/create", element: <CreateRepo /> },
     { path: "/repository/:id", element: <RepoDetail /> },
   ]);
