@@ -1,4 +1,14 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+
+// Optional auth: returns userId if a valid Bearer token is present, else null
+function requesterId(req) {
+  try {
+    const h = req.headers.authorization || "";
+    if (!h.startsWith("Bearer ")) return null;
+    return jwt.verify(h.slice(7), process.env.JWT_SECRET_KEY).id;
+  } catch { return null; }
+}
 const Repository = require("../models/repoModel");
 // Register referenced models so .populate("owner", "username email") / .populate("issues") work
 const User = require("../models/userModel");
@@ -39,7 +49,11 @@ async function createRepository(req, res) {
 
 async function getAllRepositories(req, res) {
   try {
-    const repositories = await Repository.find({})
+    const me = requesterId(req);
+    // Private repos are hidden from everyone except their owner
+    const repositories = await Repository.find({
+      $or: [{ visibility: { $ne: false } }, ...(me ? [{ owner: me }] : [])],
+    })
       .populate("owner", "username email")
       .populate("issues");
 
@@ -58,6 +72,13 @@ async function fetchRepositoryById(req, res) {
       .populate("forkedFrom", "name")
       .populate("issues");
 
+    const repo = repository[0];
+    if (repo && repo.visibility === false) {
+      const me = requesterId(req);
+      if (!me || String(repo.owner?._id || repo.owner) !== String(me)) {
+        return res.status(403).json({ error: "This repository is private." });
+      }
+    }
     res.json(repository);
   } catch (err) {
     console.error("Error during fetching repository : ", err.message);
